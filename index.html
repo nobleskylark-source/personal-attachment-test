@@ -111,23 +111,33 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);min-height:1
 .exp-arrow{font-size:18px;color:var(--text-muted);transition:transform .2s;flex-shrink:0;line-height:1}
 .exp-card.open .exp-arrow{transform:rotate(180deg)}
 .exp-body{display:none;padding:0 16px 16px;background:var(--surface)}
+.exp-body-open{padding:0 16px 16px;background:var(--surface)}
 .exp-body.open{display:block}
 
-.def-block{padding:12px 14px;background:var(--bg);border-radius:9px;margin-bottom:8px;border:.5px solid var(--border)}
+.def-block{padding:11px 13px;background:var(--surface1);border-radius:9px;margin-bottom:7px;border:.5px solid var(--border)}
+.def-block.muted{background:transparent;border:.5px dashed var(--border);opacity:.55;padding:9px 12px}
+.def-block.muted .def-lbl{font-size:9px}
+.def-block.key{background:var(--accent-bg);border:1px solid var(--accent-border);padding:13px 15px}
 .def-lbl{font-size:10px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--text-muted);margin-bottom:4px}
-.def-title{font-size:14px;font-weight:500;color:var(--text);margin-bottom:3px}
-.def-body{font-size:13px;color:var(--text-sec);line-height:1.7}
+.def-block.key .def-lbl{color:var(--accent)}
+.def-title{font-size:13px;font-weight:500;color:var(--text);margin-bottom:3px}
+.def-block.key .def-title{font-size:15px;font-weight:600;color:var(--accent)}
+.def-body{font-size:12px;color:var(--text-sec);line-height:1.65}
+.def-block.muted .def-body{color:var(--text-muted);font-size:11px}
+.def-block.muted .def-title{font-weight:500;color:var(--text-muted)}
+.def-block.key .def-body{color:var(--text);font-size:13px}
 .def-quote{font-size:13px;color:var(--text);line-height:1.7;padding:10px 12px;background:var(--surface);border-radius:7px;border-left:2px solid var(--border-strong);margin-top:8px;font-style:italic}
 
 .f4-grid{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-bottom:8px}
 .f4-item{padding:10px 12px;background:var(--bg);border-radius:9px;border:.5px solid var(--border)}
 .f4-item.mine{border-color:var(--accent-border);background:var(--accent-bg)}
+.f4-item:not(.mine){opacity:.55;background:transparent;border-style:dashed}
 .f4-badge{display:inline-block;font-size:10px;font-weight:600;padding:2px 8px;border-radius:99px;margin-bottom:5px}
 .f4-item.mine .f4-badge{background:var(--accent-bg);color:var(--accent)}
-.f4-item:not(.mine) .f4-badge{background:var(--surface);color:var(--text-muted)}
+.f4-item:not(.mine) .f4-badge{background:transparent;color:var(--text-muted);padding-left:0}
 .f4-name{font-size:13px;font-weight:500;margin-bottom:3px}
 .f4-item.mine .f4-name{color:var(--accent)}
-.f4-item:not(.mine) .f4-name{color:var(--text-sec)}
+.f4-item:not(.mine) .f4-name{color:var(--text-muted)}
 .f4-desc{font-size:11px;color:var(--text-muted);line-height:1.5}
 
 .sig-item{padding:13px 15px;background:var(--surface);border-radius:10px;margin-bottom:8px;border:.5px solid var(--border)}
@@ -751,43 +761,43 @@ function buildResult(){
       const id='cc'+idx;
       let secsHtml='';
       cc.secs.forEach(s=>{secsHtml+=`<div class="cc-sec"><div class="cc-lbl">${s.l}</div>${s.t?`<div class="cc-text">${s.t}</div>`:''}${s.q?`<div class="cc-quote">${s.q}</div>`:''}</div>`;});
-      ccHtml+=`<div class="cc" id="${id}"><div class="exp-hd" onclick="toggleExp('${id}')" style="background:${cc.bg}"><div class="exp-hd-left"><div class="exp-eye" style="color:${cc.col}">읽을거리</div><div class="exp-title" style="color:${cc.col}">${cc.title}</div><div class="exp-hint">${cc.sub} — 눌러서 보기</div></div><div class="exp-arrow">∨</div></div><div class="exp-body" id="eb-${id}">${secsHtml}</div></div>`;
+      ccHtml+=`<div class="cc" id="${id}"><div class="exp-hd" onclick="toggleExp('${id}')"><div class="exp-hd-left"><div class="exp-title">${cc.title}</div><div class="exp-hint">${cc.sub} — 눌러서 보기</div></div><div class="exp-arrow">∨</div></div><div class="exp-body" id="eb-${id}">${secsHtml}</div></div>`;
     });
 
     document.getElementById('res-header').innerHTML=`<div class="re">${t.attach} / ${t.f4}</div><div class="rn" style="color:${t.col}">${t.name}</div><div class="ro">${t.one}</div>${comboHtml}`;
 
     document.getElementById('tb-result').innerHTML=`
-      <div class="sec-lbl">학술적 분류</div>
-      <div class="exp-card" id="ec1">
-        <div class="exp-hd" onclick="toggleExp('ec1')"><div class="exp-hd-left"><div class="exp-eye">애착 이론</div><div class="exp-title">${t.attach}</div><div class="exp-hint">${t.attachEng} — 눌러서 자세히 보기</div></div><div class="exp-arrow">∨</div></div>
-        <div class="exp-body" id="eb-ec1">
-          <div class="def-block"><div class="def-lbl">애착 이론이란?</div><div class="def-body">1960년대 심리학자 존 볼비(John Bowlby)가 제안한 이론이에요. 어린 시절 주 양육자와의 관계가 평생의 관계 패턴을 형성한다는 내용이에요.</div></div>
+      <div class="sec-lbl">당신의 유형</div>
+      <div class="exp-card">
+        <div class="exp-hd"><div class="exp-hd-left"><div class="exp-eye">애착 이론</div><div class="exp-title">${t.attach}</div><div class="exp-hint">${t.attachEng}</div></div></div>
+        <div class="exp-body-open">
+          <div class="def-block muted"><div class="def-lbl">애착 이론이란?</div><div class="def-body">어린 시절 가까운 사람과의 관계 경험이 성인이 된 후의 관계 패턴에 깊이 영향을 준다고 보는 이론이에요. 사람은 크게 안정형, 불안-몰두형, 회피-무시형, 공포-회피형 네 가지 패턴 중 하나에 가깝게 관계를 맺어요. 이건 타고난 성격이 아니라, 반복된 경험이 만든 반응 습관에 가까워요.</div></div>
           <div class="def-block"><div class="def-lbl">${t.attach}이란?</div><div class="def-title">${t.attachEng}</div><div class="def-body">${t.attachDesc}</div></div>
-          <div class="def-block"><div class="def-lbl">${t.name}과의 연결</div><div class="def-body">${t.attachConnect}</div></div>
+          <div class="def-block key"><div class="def-lbl">${t.name}과의 연결</div><div class="def-body">${t.attachConnect}</div></div>
         </div>
       </div>
-      <div class="exp-card" id="ec2">
-        <div class="exp-hd" onclick="toggleExp('ec2')"><div class="exp-hd-left"><div class="exp-eye">4F 방어기제</div><div class="exp-title">${t.f4}</div><div class="exp-hint">트라우마 반응 이론 — 눌러서 자세히 보기</div></div><div class="exp-arrow">∨</div></div>
-        <div class="exp-body" id="eb-ec2">
-          <div class="def-block"><div class="def-lbl">4F 방어기제란?</div><div class="def-body">위협적인 상황에서 인간이 보이는 4가지 본능적 반응이에요. 관계에서의 불안도 동일한 방어 회로를 작동시켜요.</div></div>
+      <div class="exp-card">
+        <div class="exp-hd"><div class="exp-hd-left"><div class="exp-eye">4F 방어기제</div><div class="exp-title">${t.f4}</div><div class="exp-hint">트라우마 반응 이론</div></div></div>
+        <div class="exp-body-open">
+          <div class="def-block"><div class="def-lbl">4F 방어기제란?</div><div class="def-body">위협을 느낀 신경계가 자동으로 선택하는 네 가지 생존 반응이에요. 맞서 싸우거나(Fight), 도망치거나(Flight), 얼어붙거나(Freeze), 순응하는(Fawn) 방식으로 나타나요. 원래는 신체적 위험 앞에서 작동하도록 설계된 회로인데, 관계에서 거절이나 갈등을 마주할 때도 똑같이 켜져요. 의식적으로 선택하는 게 아니라 몸이 먼저 반응하는 거라, 알아차리기 전까지는 매번 같은 패턴이 반복돼요.</div></div>
           <div class="f4-grid">${f4Html}</div>
-          <div class="def-block"><div class="def-lbl">${t.name}의 작동 방식</div><div class="def-body">${t.f4desc}</div></div>
+          <div class="def-block key"><div class="def-lbl">${t.name}의 작동 방식</div><div class="def-body">${t.f4desc}</div></div>
         </div>
       </div>
-      <div class="exp-card" id="ec3">
-        <div class="exp-hd" onclick="toggleExp('ec3')"><div class="exp-hd-left"><div class="exp-eye">심리 기저</div><div class="exp-title">핵심 공포와 작동 방식</div><div class="exp-hint">이 패턴이 왜 생기는지 — 눌러서 자세히 보기</div></div><div class="exp-arrow">∨</div></div>
-        <div class="exp-body" id="eb-ec3">
-          <div class="def-block"><div class="def-lbl">핵심 공포</div><div class="def-title">${t.fear}</div><div class="def-body">${t.fearDesc}</div></div>
+      <div class="exp-card">
+        <div class="exp-hd"><div class="exp-hd-left"><div class="exp-eye">심리 기저</div><div class="exp-title">핵심 공포와 작동 방식</div><div class="exp-hint">이 패턴이 왜 생기는지</div></div></div>
+        <div class="exp-body-open">
+          <div class="def-block key"><div class="def-lbl">핵심 공포</div><div class="def-title">${t.fear}</div><div class="def-body">${t.fearDesc}</div></div>
           <div class="def-block"><div class="def-lbl">악순환 구조</div><div class="def-body">${t.cycle}</div><div class="def-quote">인정받는 순간은 있지만, 그게 오래 가지 않는다는 걸 이미 경험으로 알고 있을 거예요.</div></div>
         </div>
       </div>
       <div class="div"></div>
-      ${sigHtml?`<div class="sec-lbl">당신의 반응 신호</div>${sigHtml}<div class="div"></div>`:''}
       <div class="sec-lbl">반응 분포</div>${barsHtml}
       <div id="subtype-panel"></div>
       <div class="div"></div>
+      ${sigHtml?`<div class="sec-lbl">선택지 반응 상세 분석</div>${sigHtml}<div class="div"></div>`:''}
       <div class="sec-lbl">맞춤 분석</div>
-      <div class="ai-box"><div class="ai-lbl">선택 패턴 + 반응 시간 기반</div><div class="ai-text">${aiText}</div></div>
+      <div class="ai-box"><div class="ai-lbl">선택 패턴 + 선택지 반응 시간 기반</div><div class="ai-text">${aiText}</div></div>
       ${ccHtml?`<div class="div"></div><div class="sec-lbl">더 읽어보면 좋은 이야기</div>${ccHtml}`:''}
       <div class="div"></div>
       <div class="sec-lbl">오늘부터 해볼 것</div>
@@ -840,19 +850,25 @@ function ar(el){el.style.height='auto';el.style.height=Math.min(el.scrollHeight,
 function restart(){scores={T:0,A:0,D:0,S:0,K:0};cur=0;selections=[];timeData=[];savedAnswers=[];backLog=[];finalProfile=null;show('s-intro');}
 
 function showSubType(key){
-  const t=TYPES[key];
   const panel=document.getElementById('subtype-panel');
+  if(panel.classList.contains('on')&&panel.dataset.key===key){
+    panel.classList.remove('on');
+    panel.dataset.key='';
+    return;
+  }
+  const t=TYPES[key];
   const f4Html=F4_ALL.map(f=>{const m=t.f4mine&&t.f4mine.includes(f.key);return`<div class="f4-item${m?' mine':''}"><div class="f4-badge">${m?'해당':'참고'}</div><div class="f4-name">${f.key}</div><div class="f4-desc">${f.desc}</div></div>`;}).join('');
   panel.innerHTML=`
     <span class="subtype-close" onclick="document.getElementById('subtype-panel').classList.remove('on')">닫기 ×</span>
     <div style="font-size:11px;color:var(--text-muted);margin-bottom:4px">참고 유형 — 주 유형은 아니지만 반응에서 일부 나타났어요</div>
     <div style="font-size:20px;font-weight:600;color:${t.col};margin-bottom:4px">${t.name}</div>
     <div style="font-size:13px;color:var(--text-sec);line-height:1.65;margin-bottom:12px">${t.one}</div>
-    <div class="def-block"><div class="def-lbl">애착 이론</div><div class="def-title">${t.attach}</div><div class="def-body">${t.attachDesc}</div></div>
+    <div class="def-block"><div class="def-lbl">${t.attach}</div><div class="def-body">${t.attachDesc}</div></div>
     <div class="f4-grid" style="margin-top:8px">${f4Html}</div>
     <div class="def-block" style="margin-top:8px"><div class="def-lbl">핵심 공포</div><div class="def-title">${t.fear}</div><div class="def-body">${t.fearDesc}</div></div>
   `;
   panel.classList.add('on');
+  panel.dataset.key=key;
   panel.scrollIntoView({behavior:'smooth',block:'nearest'});
 }
 
