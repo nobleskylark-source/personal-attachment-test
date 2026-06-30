@@ -1,0 +1,801 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>내 감정의 배후를 스스로 밝혀내는 곳</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#FAFAF8;--surface:#F4F3EF;--surface2:#EEECEA;
+  --border:#E2E0DB;--border-strong:#C8C5BE;
+  --text:#1A1916;--text-sec:#6B6860;--text-muted:#9E9B94;
+  --accent:#C4571A;--accent-bg:#FBF0EB;--accent-border:#E8C4B0;
+  --font:'Pretendard',-apple-system,sans-serif;
+}
+body{background:var(--bg);color:var(--text);font-family:var(--font);min-height:100vh}
+#wrap{max-width:600px;margin:0 auto;padding:0 1.25rem 5rem}
+.scr{display:none}.scr.on{display:block}
+
+/* INTRO */
+.intro{padding:2.5rem 0 1.5rem}
+.eye{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--text-muted);margin-bottom:1.5rem}
+.h1{font-size:26px;font-weight:600;line-height:1.35;margin-bottom:1.25rem;color:var(--text);letter-spacing:-0.01em}
+.desc{font-size:14px;color:var(--text-sec);line-height:1.85;margin-bottom:2rem}
+.desc strong{color:var(--text);font-weight:600}
+.method-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:1.75rem}
+.mc{padding:13px 14px;border-radius:10px;border:.5px solid var(--border);background:var(--surface)}
+.mc-num{font-size:10px;font-weight:600;color:var(--text-muted);margin-bottom:5px;letter-spacing:.05em}
+.mc-t{font-size:13px;font-weight:500;color:var(--text);margin-bottom:3px}
+.mc-d{font-size:11px;color:var(--text-muted);line-height:1.5}
+.phase-list{margin-bottom:1.75rem}
+.plist-title{font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--text-muted);margin-bottom:10px}
+.pl-item{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:.5px solid var(--border)}
+.pl-item:last-child{border-bottom:none}
+.pl-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.pl-phase{font-size:11px;font-weight:500;color:var(--text-muted);min-width:62px}
+.pl-name{font-size:13px;color:var(--text)}
+.sbtn{width:100%;padding:14px;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer;background:var(--text);color:var(--bg);border:none;letter-spacing:.01em;transition:opacity .15s}
+.sbtn:hover{opacity:.88}
+.foot-note{font-size:11px;color:var(--text-muted);text-align:center;margin-top:14px;line-height:1.6}
+
+/* PHASE CARD */
+.phase-card{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:60vh;padding:2rem;text-align:center}
+.pc-bar{width:60px;height:3px;border-radius:2px;margin:0 auto 1.5rem}
+.pc-eye{font-size:11px;letter-spacing:.1em;text-transform:uppercase;margin-bottom:1rem}
+.pc-name{font-size:22px;font-weight:600;margin-bottom:1rem}
+.pc-desc{font-size:15px;color:var(--text-sec);line-height:1.75;margin-bottom:2.5rem;max-width:320px}
+.pc-btn{padding:12px 32px;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer;background:var(--text);color:var(--bg);border:none;transition:opacity .15s}
+.pc-btn:hover{opacity:.88}
+
+/* QUIZ */
+.quiz-top{padding-top:1.75rem}
+.prog-w{height:2px;background:var(--border);border-radius:2px;margin-bottom:1.5rem}
+.prog-f{height:100%;border-radius:2px;transition:width .4s ease}
+.phase-banner{padding:8px 12px;border-radius:8px;margin-bottom:1rem;display:flex;align-items:center;gap:8px}
+.pb-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+.pb-label{font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase}
+.pb-name{font-size:12px;margin-left:auto}
+.q-num{font-size:11px;font-weight:600;color:var(--text-muted);margin-bottom:5px;letter-spacing:.04em}
+.qt{font-size:15px;font-weight:500;color:var(--text);line-height:1.6;margin-bottom:1.25rem}
+.inst{font-size:11px;color:var(--text-muted);margin-bottom:8px}
+.choices{display:flex;flex-direction:column;gap:6px;margin-bottom:5px}
+.ch{display:flex;align-items:flex-start;gap:9px;padding:11px 13px;background:var(--surface);border:.5px solid var(--border);border-radius:9px;cursor:pointer;user-select:none;transition:border-color .1s}
+.ch:hover{border-color:var(--border-strong)}
+.ch.on{border-color:var(--text);background:var(--surface2)}
+.rk{width:19px;height:19px;border-radius:50%;border:.5px solid var(--border-strong);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:600;color:var(--text-muted);flex-shrink:0;margin-top:1px}
+.ch.on .rk{background:var(--text);color:var(--bg);border-color:transparent}
+.ct{font-size:13px;color:var(--text);line-height:1.5}
+.hint{font-size:11px;color:var(--text-muted);text-align:right;margin-bottom:1.25rem}
+.qnav{display:flex;justify-content:space-between;align-items:center}
+.qn{font-size:12px;color:var(--text-muted)}
+.nav-btns{display:flex;gap:8px;align-items:center}
+.prev-btn{padding:9px 16px;border-radius:8px;font-size:13px;cursor:pointer;background:transparent;color:var(--text-muted);border:.5px solid var(--border);transition:all .1s}
+.prev-btn:hover{border-color:var(--border-strong);color:var(--text)}
+.prev-btn:disabled{opacity:.2;cursor:not-allowed}
+.nxt{padding:9px 20px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;background:var(--text);color:var(--bg);border:none;transition:opacity .15s}
+.nxt:disabled{opacity:.2;cursor:not-allowed}
+.nxt:not(:disabled):hover{opacity:.85}
+
+/* LOADING */
+.load{text-align:center;padding:5rem 0}
+.lh{font-size:18px;font-weight:500;margin-bottom:8px}
+.ls{font-size:13px;color:var(--text-muted);line-height:1.7;margin-bottom:2.5rem}
+.dots span{display:inline-block;width:5px;height:5px;border-radius:50%;background:var(--text-muted);margin:0 3px;animation:dp 1.2s ease-in-out infinite}
+.dots span:nth-child(2){animation-delay:.2s}.dots span:nth-child(3){animation-delay:.4s}
+@keyframes dp{0%,80%,100%{transform:scale(.7);opacity:.3}40%{transform:scale(1.1);opacity:1}}
+@keyframes fi{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+
+/* RESULT */
+.res{padding-top:2.5rem;animation:fi .4s ease}
+.tabs{display:flex;border-bottom:.5px solid var(--border);margin-bottom:1.5rem}
+.tab{padding:10px 18px;font-size:13px;font-weight:500;color:var(--text-muted);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-.5px;transition:color .15s,border-color .15s}
+.tab.on{color:var(--text);border-bottom-color:var(--text)}
+.tab-body{display:none}
+.tab-body.on{display:block}
+.re{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--text-muted);margin-bottom:8px}
+.rn{font-size:28px;font-weight:600;line-height:1.2;margin-bottom:6px;letter-spacing:-0.02em}
+.ro{font-size:14px;color:var(--text-sec);line-height:1.7;margin-bottom:1.25rem}
+.combo{font-size:13px;color:var(--text-sec);line-height:1.65;padding:10px 14px;background:var(--surface);border-radius:9px;margin-bottom:1.25rem;border-left:2px solid var(--accent-border)}
+.combo-near{font-size:13px;color:var(--text-sec);line-height:1.65;padding:10px 14px;background:var(--accent-bg);border-radius:9px;margin-bottom:1.25rem;border-left:2px solid var(--accent-border)}
+.div{height:.5px;background:var(--border);margin:1.5rem 0}
+.sec-lbl{font-size:10px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--text-muted);margin-bottom:10px}
+
+.exp-card{border:.5px solid var(--border);border-radius:11px;margin-bottom:8px;overflow:hidden}
+.exp-hd{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;cursor:pointer;background:var(--surface);user-select:none;gap:12px}
+.exp-hd:hover{background:var(--surface2)}
+.exp-hd-left{flex:1;min-width:0}
+.exp-eye{font-size:10px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:var(--text-muted);margin-bottom:3px}
+.exp-title{font-size:14px;font-weight:500;color:var(--text)}
+.exp-hint{font-size:11px;color:var(--text-muted);margin-top:2px}
+.exp-arrow{font-size:18px;color:var(--text-muted);transition:transform .2s;flex-shrink:0;line-height:1}
+.exp-card.open .exp-arrow{transform:rotate(180deg)}
+.exp-body{display:none;padding:0 16px 16px;background:var(--surface)}
+.exp-body.open{display:block}
+
+.def-block{padding:12px 14px;background:var(--bg);border-radius:9px;margin-bottom:8px;border:.5px solid var(--border)}
+.def-lbl{font-size:10px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--text-muted);margin-bottom:4px}
+.def-title{font-size:14px;font-weight:500;color:var(--text);margin-bottom:3px}
+.def-body{font-size:13px;color:var(--text-sec);line-height:1.7}
+.def-quote{font-size:13px;color:var(--text);line-height:1.7;padding:10px 12px;background:var(--surface);border-radius:7px;border-left:2px solid var(--border-strong);margin-top:8px;font-style:italic}
+
+.f4-grid{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-bottom:8px}
+.f4-item{padding:10px 12px;background:var(--bg);border-radius:9px;border:.5px solid var(--border)}
+.f4-item.mine{border-color:var(--accent-border);background:var(--accent-bg)}
+.f4-badge{display:inline-block;font-size:10px;font-weight:600;padding:2px 8px;border-radius:99px;margin-bottom:5px}
+.f4-item.mine .f4-badge{background:var(--accent-bg);color:var(--accent)}
+.f4-item:not(.mine) .f4-badge{background:var(--surface);color:var(--text-muted)}
+.f4-name{font-size:13px;font-weight:500;margin-bottom:3px}
+.f4-item.mine .f4-name{color:var(--accent)}
+.f4-item:not(.mine) .f4-name{color:var(--text-sec)}
+.f4-desc{font-size:11px;color:var(--text-muted);line-height:1.5}
+
+.sig-item{padding:13px 15px;background:var(--surface);border-radius:10px;margin-bottom:8px;border:.5px solid var(--border)}
+.sig-top{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+.sig-badge{font-size:10px;font-weight:600;padding:2px 8px;border-radius:99px;flex-shrink:0}
+.sig-badge.slow{background:var(--accent-bg);color:var(--accent)}
+.sig-badge.changed{background:#E6F1FB;color:#185FA5}
+.sig-badge.back{background:#EAF3DE;color:#3B6D11}
+.sig-q{font-size:12px;font-weight:500;color:var(--text);line-height:1.5;margin-bottom:5px}
+.sig-ans{font-size:12px;color:var(--text-sec);padding:6px 10px;background:var(--surface2);border-radius:6px;margin-bottom:6px;line-height:1.5;border-left:2px solid var(--border-strong)}
+.sig-m{font-size:12px;line-height:1.55;padding:6px 10px;border-radius:6px}
+.sig-m.slow{color:var(--accent);background:var(--accent-bg)}
+.sig-m.changed{color:#185FA5;background:#E6F1FB}
+.sig-m.back{color:#3B6D11;background:#EAF3DE}
+
+.bar-row{margin-bottom:9px}
+.bar-meta{display:flex;justify-content:space-between;font-size:12px;color:var(--text-sec);margin-bottom:3px;align-items:center}
+.bar-track{height:4px;background:var(--border);border-radius:2px;overflow:hidden}
+.bar-fill{height:100%;border-radius:2px;transition:width .8s ease}
+
+.ai-box{background:var(--surface);border-radius:12px;padding:1.25rem;margin-bottom:8px}
+.ai-lbl{font-size:10px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--text-muted);margin-bottom:10px}
+.ai-text{font-size:14px;color:var(--text);line-height:1.85}
+.action-box{border:.5px solid var(--border);border-radius:11px;padding:1.25rem;margin-bottom:8px}
+.action-n{font-size:10px;font-weight:600;color:var(--text-muted);letter-spacing:.07em;text-transform:uppercase;margin-bottom:5px}
+.action-t{font-size:13px;color:var(--text);line-height:1.7}
+
+.profile-box{background:var(--surface);border-radius:11px;padding:1.25rem;margin-bottom:1rem}
+.profile-code{font-family:monospace;font-size:12px;color:var(--text-sec);background:var(--surface2);padding:10px 12px;border-radius:7px;margin:8px 0;line-height:1.6;word-break:break-all}
+.copy-btn{width:100%;padding:11px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;background:var(--text);color:var(--bg);border:none;transition:opacity .15s;margin-top:4px}
+.copy-btn:hover{opacity:.85}
+.copy-btn.copied{background:var(--accent)}
+
+.cc{border:.5px solid var(--border);border-radius:11px;margin-bottom:10px;overflow:hidden}
+.cc-sec{margin-top:10px;padding:9px 11px;background:var(--surface2);border-radius:7px;border:.5px solid var(--border)}
+.cc-lbl{font-size:9px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--text-muted);margin-bottom:4px}
+.cc-text{font-size:12px;color:var(--text);line-height:1.65}
+.cc-quote{font-size:12px;color:var(--text);line-height:1.65;font-style:italic;padding:8px 10px;background:var(--surface);border-radius:6px;border-left:2px solid var(--border-strong);margin-top:6px}
+
+/* CHAT */
+.chat-guide{padding:12px 14px;background:var(--surface);border-radius:10px;margin-bottom:1rem;font-size:12px;color:var(--text-sec);line-height:1.7}
+.chat-guide strong{color:var(--text)}
+.msgs{display:flex;flex-direction:column;gap:12px;margin-bottom:1rem;min-height:100px}
+.msg{max-width:88%}
+.msg.user{align-self:flex-end}
+.msg.ai{align-self:flex-start}
+.msg-bubble{padding:11px 14px;border-radius:12px;font-size:13px;line-height:1.7}
+.msg.user .msg-bubble{background:var(--text);color:var(--bg);border-radius:12px 12px 3px 12px}
+.msg.ai .msg-bubble{background:var(--surface);color:var(--text);border-radius:12px 12px 12px 3px}
+.chat-input-row{display:flex;gap:8px;align-items:flex-end}
+.chat-input{flex:1;padding:11px 14px;border-radius:10px;border:.5px solid var(--border);background:var(--surface);font-size:13px;color:var(--text);resize:none;font-family:var(--font);line-height:1.6;outline:none;max-height:100px}
+.chat-input:focus{border-color:var(--border-strong)}
+.send-btn{padding:11px 18px;border-radius:10px;font-size:13px;font-weight:600;cursor:pointer;background:var(--text);color:var(--bg);border:none;flex-shrink:0;transition:opacity .15s}
+.send-btn:hover{opacity:.85}
+.send-btn:disabled{opacity:.25;cursor:not-allowed}
+
+.retry{width:100%;margin-top:1rem;padding:11px;border-radius:9px;font-size:13px;cursor:pointer;border:.5px solid var(--border);background:transparent;color:var(--text-sec)}
+.retry:hover{background:var(--surface)}
+</style>
+</head>
+<body>
+<div id="wrap">
+
+<div id="s-intro" class="scr on">
+  <div class="intro">
+    <div class="eye">퍼스널 심리 프로그램 — 관계 애착 편</div>
+    <div class="h1">내 감정의 배후를<br>스스로 밝혀내는 곳</div>
+    <div class="desc">
+      나조차 이해할 수 없었던 나의 반응들. 그 이면에는 미처 깨닫지 못한 <strong>애착의 비밀과 결핍</strong>이 숨어 있습니다.<br><br>
+      28개의 상황에 반응하는 동안, 당신이 무엇을 고민했고 무엇을 망설였는지까지 기록됩니다. 당신의 엇나간 반응들이 말해주는 <strong>'진짜 당신'</strong>을 해석해 드립니다.
+    </div>
+    <div class="method-row">
+      <div class="mc"><div class="mc-num">01 반응</div><div class="mc-t">28개 시나리오</div><div class="mc-d">고른 선택, 고민한 시간, 바꾼 답까지 전부 데이터예요</div></div>
+      <div class="mc"><div class="mc-num">02 분석</div><div class="mc-t">애착이론 + 4F</div><div class="mc-d">학술적 분류로 패턴의 근거를 명확히 보여드려요</div></div>
+    </div>
+    <div class="phase-list">
+      <div class="plist-title">분석 구간</div>
+      <div class="pl-item"><div class="pl-dot" style="background:#9E9B94"></div><span class="pl-phase">Phase 0</span><span class="pl-name">상대가 먼저 다가올 때</span></div>
+      <div class="pl-item"><div class="pl-dot" style="background:#C4571A"></div><span class="pl-phase">Phase 1</span><span class="pl-name">마음이 생길 때</span></div>
+      <div class="pl-item"><div class="pl-dot" style="background:#3878B8"></div><span class="pl-phase">Phase 2</span><span class="pl-name">썸</span></div>
+      <div class="pl-item"><div class="pl-dot" style="background:#6B5FC4"></div><span class="pl-phase">Phase 3</span><span class="pl-name">고백 전후</span></div>
+    </div>
+    <button class="sbtn" onclick="startQuiz()">분석 시작하기 →</button>
+    <div class="foot-note">약 7~10분 소요 · 결과는 즉시 확인할 수 있어요</div>
+  </div>
+</div>
+
+<div id="s-phase" class="scr">
+  <div class="phase-card">
+    <div class="pc-bar" id="pc-bar"></div>
+    <div class="pc-eye" id="pc-eye"></div>
+    <div class="pc-name" id="pc-name"></div>
+    <div class="pc-desc" id="pc-desc"></div>
+    <button class="pc-btn" onclick="continueQuiz()">계속하기 →</button>
+  </div>
+</div>
+
+<div id="s-quiz" class="scr">
+  <div class="quiz-top">
+    <div class="prog-w"><div class="prog-f" id="prog" style="width:0%"></div></div>
+    <div class="phase-banner" id="pbanner"><div class="pb-dot" id="pbdot"></div><span class="pb-label" id="pblabel"></span><span class="pb-name" id="pbname"></span></div>
+    <div class="q-num" id="qnum"></div>
+    <div class="qt" id="qtxt"></div>
+    <div class="inst">해당하는 행동만 고르세요. 여러 개면 먼저 할 것부터.</div>
+    <div class="choices" id="choices"></div>
+    <div class="hint">다시 누르면 선택 해제</div>
+    <div class="qnav">
+      <span class="qn" id="qmeta"></span>
+      <div class="nav-btns">
+        <button class="prev-btn" id="prev-btn" onclick="prevQ()">← 이전</button>
+        <button class="nxt" id="nxt" disabled onclick="nextQ()">다음 →</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="s-load" class="scr">
+  <div class="load">
+    <div class="lh">분석 중</div>
+    <div class="ls">선택 패턴과 반응 시간을 종합해<br>당신만의 리포트를 만들고 있어요</div>
+    <div class="dots"><span></span><span></span><span></span></div>
+  </div>
+</div>
+
+<div id="s-result" class="scr">
+  <div class="res">
+    <div id="res-header"></div>
+    <div class="tabs">
+      <div class="tab on" onclick="switchTab('result')">결과 리포트</div>
+      <div class="tab" onclick="switchTab('chat')">AI 상담</div>
+    </div>
+    <div class="tab-body on" id="tb-result"></div>
+    <div class="tab-body" id="tb-chat"></div>
+  </div>
+</div>
+
+</div>
+
+<script>
+const PHASES=[
+  {label:"Phase 0",name:"상대가 먼저 다가올 때",col:"#9E9B94",desc:null},
+  {label:"Phase 1",name:"마음이 생길 때",col:"#C4571A",desc:"그 사람이 조금씩 신경 쓰이기 시작해요."},
+  {label:"Phase 2",name:"썸",col:"#3878B8",desc:"이름 없는 관계 — 그 애매함 속에서 나는 어떻게 반응하나요."},
+  {label:"Phase 3",name:"고백 전후",col:"#6B5FC4",desc:"관계가 정의되려는 순간이에요."},
+];
+
+const Qs=[
+  {p:0,t:"전혀 관심 없던 상대가 나에게 호감을 표현했다. 가장 먼저 드는 생각은?",c:[
+    {txt:"나 아직 꽤 매력 있네, 뿌듯하다",s:{T:2}},
+    {txt:"갑자기 왜? 부담스럽다, 거리를 둬야겠다",s:{D:2}},
+    {txt:"이 사람 마음이 언제까지 갈까, 금방 식으면 어떡하지",s:{A:2}},
+    {txt:"상대에게 흠잡힐 것 없는 좋은 모습을 보여줘야겠다",s:{K:2}},
+    {txt:"고맙네. 어떤 사람인지 천천히 알아봐야지",s:{S:2}},
+  ]},
+  {p:0,t:"상대가 첫 만남을 제안했다. 나의 반응은?",c:[
+    {txt:"내가 먹고 싶은 것보다 상대가 좋아할 메뉴를 먼저 찾는다",s:{K:2}},
+    {txt:"만나주긴 하되 내가 주도적인 위치에서 이끌려 한다",s:{T:2}},
+    {txt:"단둘이는 부담스러워서 핑계를 대거나 여럿이 보자고 한다",s:{D:2}},
+    {txt:"너무 빨리 답하면 쉬워 보일까봐 타이밍을 잰다",s:{A:2}},
+    {txt:"마음이 내키면 흔쾌히 수락하고 솔직하게 조율한다",s:{S:2}},
+  ]},
+  {p:0,t:"나에게 관심 있다고 했던 상대인데, 내 마음은 아직 없는 상태다. 그런데 그 상대가 답장을 3시간째 안 하고 있다.",c:[
+    {txt:"관심 있다던 사람이 왜 이렇게 늦지? 묘하게 거슬리고 기분 나쁘다",s:{T:2}},
+    {txt:"내가 한 말 때문에 상대 마음이 식은 건 아닐까, 온갖 시나리오가 떠오른다",s:{A:2}},
+    {txt:"오히려 다행이다. 그냥 내 할 일에 집중한다",s:{D:2}},
+    {txt:"내가 상대를 귀찮게 한 건 아닐까 싶어, 다음 연락은 더 조심스럽게 해야지",s:{K:2}},
+    {txt:"바쁜가보다, 대수롭지 않게 넘긴다",s:{S:2}},
+  ]},
+  {p:0,t:"서로 취미가 완전히 다르다는 걸 알게 됐다.",c:[
+    {txt:"저도 해보고 싶었어요! 하며 억지로 상대 취미에 관심 있는 척 맞춰간다",s:{K:2}},
+    {txt:"역시 안 맞아. 이걸 핑계로 멀어질 준비를 한다",s:{D:2}},
+    {txt:"공감대가 없으면 상대가 떠날까봐 불안해진다",s:{A:2}},
+    {txt:"내 취미가 더 낫다는 걸 은근히 어필한다",s:{T:2}},
+    {txt:"다름을 흥미롭게 받아들이고 서로 이야기한다",s:{S:2}},
+  ]},
+  {p:0,t:"상대가 내 말을 기억해서 작은 선물을 줬다.",c:[
+    {txt:"빚진 것 같고 내 영역에 너무 들어온 것 같아 방어막이 쳐진다",s:{D:2}},
+    {txt:"상대가 기대하는 리액션을 보여줘야 한다는 생각에 과하게 감동한 척한다",s:{K:2}},
+    {txt:"이 선물이 어떤 신호인지 계속 해석하려 한다",s:{A:2}},
+    {txt:"역시 나한테 푹 빠졌구나, 전리품 하나 얻은 기분이다",s:{T:2}},
+    {txt:"진심으로 고마워하고 나중에 가볍게 보답해야지 생각한다",s:{S:2}},
+  ]},
+  {p:0,t:"상대의 명확한 단점이 눈에 띄었다.",c:[
+    {txt:"내 수준에 아깝다 싶지만, 잘해주니까 매력 확인용으로 곁에 둔다",s:{T:2}},
+    {txt:"그 단점을 핑계로 삼아 상대와 단절할 이유로 쓴다",s:{D:2}},
+    {txt:"거슬리지만 티 안 내고 오히려 억지 칭찬을 한다",s:{K:2}},
+    {txt:"그 단점 때문에 남들이 우리를 어떻게 볼지 과도하게 신경 쓴다",s:{A:2}},
+    {txt:"단점보다 장점이 크다면 있는 그대로 수용한다",s:{S:2}},
+  ]},
+  {p:0,t:"SNS에 올린 사진에 상대만 아무 반응이 없다.",c:[
+    {txt:"관심 있다던 사람이 내 게시물에 반응도 없다니, 자존심이 상한다",s:{T:2}},
+    {txt:"내가 별로 안 예쁘게 나온 건가 싶어, 지울까 말까 고민한다",s:{A:2}},
+    {txt:"다음엔 상대가 좋아할 스타일로 골라 올려야지 다짐한다",s:{K:2}},
+    {txt:"신경 안 쓴다. 오히려 반응 없는 게 편하다",s:{D:2}},
+    {txt:"못 봤거나 바쁜가보다 하고 넘긴다",s:{S:2}},
+  ]},
+  {p:1,t:"내가 상대의 연락을 기다리고 있다는 걸 깨달았다.",c:[
+    {txt:"내가 왜 이러지. 감정이 커지는 게 두려워 일부러 차갑게 군다",s:{D:2}},
+    {txt:"기다리는 이 시간이 고통스럽고 온 신경이 폰에 쏠린다",s:{A:2}},
+    {txt:"내가 주도권을 뺏긴 것 같아, 다음엔 더 늦게 답장하리라 다짐한다",s:{T:2}},
+    {txt:"기다렸다는 티 내면 상대가 질려할까봐 억지로 쿨한 척 답장한다",s:{K:2}},
+    {txt:"나도 호감이 생겼구나, 자연스럽게 인정한다",s:{S:2}},
+  ]},
+  {p:1,t:"상대가 이성이 섞인 모임에 간다고 한다.",c:[
+    {txt:"누구랑 가는지, 언제 오는지 상대에게 계속 캐묻고 싶다",s:{A:2}},
+    {txt:"속으로는 질투 나지만 세상에서 제일 쿨한 척 포장한다",s:{K:2}},
+    {txt:"질투 느끼는 내 모습이 자존심 상해서 틱틱거리거나 폰을 꺼버린다",s:{D:2}},
+    {txt:"나도 질 수 없어서 이성 친구 약속을 잡아 SNS에 올린다",s:{T:2}},
+    {txt:"재밌게 놀다 와, 하고 나도 내 시간을 즐긴다",s:{S:2}},
+  ]},
+  {p:1,t:"첫 데이트 분위기가 너무 좋았다. 집에 돌아온 후 나는?",c:[
+    {txt:"오늘 말실수한 건 없나, 내 퍼포먼스를 복기하며 전전긍긍한다",s:{K:2}},
+    {txt:"장문 카톡을 보내고 상대 반응이 올 때까지 폰을 쥐고 놓지 못한다",s:{A:2}},
+    {txt:"상대가 나한테 완전히 반했겠지, 상대가 먼저 연락 오길 기대하며 즐긴다",s:{T:2}},
+    {txt:"너무 가까워진 기분에 덜컥 겁이 나서 내일은 연락을 뜸하게 한다",s:{D:2}},
+    {txt:"오늘 즐거웠다고 기분 좋게 짧게 연락을 남긴다",s:{S:2}},
+  ]},
+  {p:1,t:"대화 중 가치관이 꽤 부딪히는 주제가 나왔다.",c:[
+    {txt:"나는 갈등이 두려워 즉시 의견을 꺾고 상대 말에 무조건 동조한다",s:{K:2}},
+    {txt:"내 의견이 맞다며 상대가 굴복하는 걸 봐야 직성이 풀린다",s:{T:2}},
+    {txt:"가치관 차이로 상대가 떠날까봐 불안해서 눈치를 보며 무마하려 한다",s:{A:2}},
+    {txt:"뭐 사람마다 다르지, 하며 대화를 끊고 속으로 거리를 둔다",s:{D:2}},
+    {txt:"감정 상하지 않게 서로의 입장을 나눈다",s:{S:2}},
+  ]},
+  {p:1,t:"상대가 피곤하다며 평소보다 텐션이 낮다.",c:[
+    {txt:"혹시 나 때문에 화난 건지, 마음이 식은 건지 상대에게 계속 확인한다",s:{A:2}},
+    {txt:"상대 기분을 풀어주려 내 에너지를 120% 갈아 넣는다",s:{K:2}},
+    {txt:"상대를 돌보기 귀찮고 부담스러워서 그럼 쉬어, 하고 대화를 서둘러 끝낸다",s:{D:2}},
+    {txt:"나한테 집중 안 하는 게 괘씸해서 나도 단답형으로 성의 없게 군다",s:{T:2}},
+    {txt:"오늘 많이 피곤한가보네, 푹 쉬고 내일 연락해, 하고 배려한다",s:{S:2}},
+  ]},
+  {p:1,t:"내가 싫어하는 행동을 상대가 무심코 했다.",c:[
+    {txt:"정이 확 떨어지고, 말로 풀 생각도 없이 조용히 상대와의 연락을 끊을 준비를 한다",s:{D:2}},
+    {txt:"너무 싫지만 상대가 무안할까봐 꾹 참고 아무렇지 않은 척 넘어간다",s:{K:2}},
+    {txt:"싫은 티 내면 관계가 깨질까봐 혼자 스트레스를 다 받는다",s:{A:2}},
+    {txt:"상대를 깎아내리며 내가 도덕적으로 우위에 있음을 확인하려 한다",s:{T:2}},
+    {txt:"나는 그런 행동 불편해, 다음엔 안 해줬으면 해, 하고 상대에게 명확히 말한다",s:{S:2}},
+  ]},
+  {p:1,t:"상대에게 나의 매력을 어필해야 할 때, 주로 쓰는 방법은?",c:[
+    {txt:"상대의 이상형에 맞게 내 외모, 성격, 취향을 통째로 개조한다",s:{K:2}},
+    {txt:"다른 이성들의 관심이 많다는 걸 상대에게 흘리며 나의 희소성을 과시한다",s:{T:2}},
+    {txt:"내가 얼마나 헌신적인 사람인지 상대에게 끊임없이 증명하려 한다",s:{A:2}},
+    {txt:"상처받기 싫어서 진짜 매력 대신 쿨하고 무심한 척 방어막을 친다",s:{D:2}},
+    {txt:"내 장점을 있는 그대로 보여주고 꾸며내지 않는다",s:{S:2}},
+  ]},
+  {p:2,t:"매일 만나고 연락하는데 3주째 우리 관계에 대한 정의가 없다.",c:[
+    {txt:"피가 마른다. 어장관리 당하는 것 같아 불안해 미칠 지경이다",s:{A:2}},
+    {txt:"상대가 먼저 고백하게 만들려고 밀당 강도를 높인다",s:{T:2}},
+    {txt:"서운하지만 집착하는 사람으로 보일까봐 상대 페이스에 끝까지 맞춘다",s:{K:2}},
+    {txt:"이 애매한 상태가 책임질 것도 없고 오히려 편하다",s:{D:2}},
+    {txt:"넌 어떻게 생각해? 하고 상대에게 먼저 솔직하게 묻는다",s:{S:2}},
+  ]},
+  {p:2,t:"내가 제안한 것을 상대가 별로라며 거절했다.",c:[
+    {txt:"제안이 아닌 나 자신을 상대에게 거절당한 것처럼 느껴져 극도로 상처받는다",s:{A:2}},
+    {txt:"즉시 나도 별로였어! 하며 재빨리 상대 취향으로 내 의견을 바꾼다",s:{K:2}},
+    {txt:"자존심 상해서 다음번엔 나도 상대 제안을 무조건 거절하리라 다짐한다",s:{T:2}},
+    {txt:"거봐, 맞춰가기 피곤해. 상대에게 마음의 문을 닫는다",s:{D:2}},
+    {txt:"그럼 다른 거 하자, 하고 유연하게 대처한다",s:{S:2}},
+  ]},
+  {p:2,t:"늦은 밤 상대가 갑자기 보고 싶다, 나올 수 있어? 라고 연락했다.",c:[
+    {txt:"쌩얼에 피곤하지만 상대가 실망할까봐 풀세팅하고 나간다",s:{K:2}},
+    {txt:"상대가 나를 가벼운 관계로 보는 건 아닌가 의심하면서도 미움받기 싫어 나간다",s:{A:2}},
+    {txt:"내 루틴이 깨지는 게 불쾌해서 상대에게 단호하게 거절한다",s:{D:2}},
+    {txt:"나를 원해서 안달 난 상대의 모습을 즐기며 조금 애를 태우다 나간다",s:{T:2}},
+    {txt:"가고 싶으면 가고, 피곤하면 오늘은 안 돼 주말에 보자, 한다",s:{S:2}},
+  ]},
+  {p:2,t:"썸 기간 중 나의 가장 큰 스트레스 원인은?",c:[
+    {txt:"상대 마음이 언제 식을지 모른다는 롤러코스터 같은 불안감",s:{A:2}},
+    {txt:"상대 마음에 드는 모습을 연기하느라 소모되는 에너지",s:{K:2}},
+    {txt:"사생활이 침해받고 누군가에게 얽매이는 것 같은 답답함",s:{D:2}},
+    {txt:"상대가 내 기대만큼 완벽하게 헌신하지 않을 때의 괘씸함",s:{T:2}},
+    {txt:"특별한 스트레스 없이 이 과정 자체를 즐긴다",s:{S:2}},
+  ]},
+  {p:2,t:"나의 진짜 모습이 상대에게 들킬 뻔했다.",c:[
+    {txt:"상대가 더 알기 전에 내가 먼저 관계를 차단하고 도망친다",s:{D:2}},
+    {txt:"어떻게든 포장해서 상대에게 가면이 벗겨지지 않도록 필사적으로 막는다",s:{K:2}},
+    {txt:"이래도 계속 만나줄 거야? 하며 상대에게 병적으로 확인하려 든다",s:{A:2}},
+    {txt:"내 단점을 덮으려 상대방의 더 큰 단점을 찾아 공격한다",s:{T:2}},
+    {txt:"들켰네. 나 이런 면도 좀 있어, 하고 쑥스럽지만 인정한다",s:{S:2}},
+  ]},
+  {p:2,t:"많이 편해지면서 연락 패턴이 느슨해지고 안정화됐다.",c:[
+    {txt:"혹시 잡은 물고기 취급하는 건가 싶어, 긴장감이 사라지자 상대에게 버려질까봐 불안이 온다",s:{A:2}},
+    {txt:"상대가 더 이상 나한테 안달 내지 않자 도파민이 떨어져 질투 유발 작전을 쓴다",s:{T:2}},
+    {txt:"내 매력이 떨어진 건가 싶어 상대 취향에 맞는 이벤트를 억지로 기획한다",s:{K:2}},
+    {txt:"이제야 숨 쉬겠다. 거리가 벌어진 것에 깊이 안도한다",s:{D:2}},
+    {txt:"자연스러운 패턴을 찾았다고 생각하며 편안해한다",s:{S:2}},
+  ]},
+  {p:2,t:"상대가 친한 친구들 모임에 나를 부르려 한다.",c:[
+    {txt:"내가 상대 친구들에게 최고의 인상을 남겨야 한다는 압박감에 극도로 긴장한다",s:{K:2}},
+    {txt:"아직 확신도 없는데 상대 친구들의 영역에 일찍 끌려 들어가는 게 질색이라 거절한다",s:{D:2}},
+    {txt:"상대 친구들과 비교당하거나 챙김 받지 못할까봐 불안하다",s:{A:2}},
+    {txt:"상대가 나를 친구들에게 과시하고 싶어 하는 심리를 파악하고 즐긴다",s:{T:2}},
+    {txt:"기꺼이 참석해서 편안하게 어울리고 상대를 더 알아가는 좋은 기회로 삼는다",s:{S:2}},
+  ]},
+  {p:3,t:"오늘 무조건 고백이 나올 것 같은 타이밍이다.",c:[
+    {txt:"거절당할 공포와 책임감이 밀려와 일부러 분위기를 깨고 도망치고 싶다",s:{D:2}},
+    {txt:"드디어 쟁취했다는 승리감. 상대와의 깊은 미래는 딱히 기대 안 된다",s:{T:2}},
+    {txt:"완벽한 연기에 대한 보상이라 생각하며 억지웃음을 짓는다",s:{K:2}},
+    {txt:"고백을 받으면서도 사귀다 헤어지면 어떡하지 하는 불안이 먼저 온다",s:{A:2}},
+    {txt:"서로 마음이 같다는 것에 진심으로 기뻐하며 그 순간을 맞이한다",s:{S:2}},
+  ]},
+  {p:3,t:"상대가 우리 무슨 사이야? 라고 먼저 물어본다.",c:[
+    {txt:"확답을 구걸하는 상대를 보며 주도권이 완전히 내게 있음을 만끽한다",s:{T:2}},
+    {txt:"확답을 주는 순간 내 발목이 잡히는 것 같아 글쎄 넌 어때? 하며 회피한다",s:{D:2}},
+    {txt:"상대가 원하는 정답이 뭔지 빠르게 눈치를 살피며 그에 맞춰 대답한다",s:{K:2}},
+    {txt:"내가 먼저 말했다가 거절당할까봐 두려워 대답을 상대에게 떠넘긴다",s:{A:2}},
+    {txt:"난 너랑 진지하게 만나고 싶어, 넌 어때? 하고 상대에게 투명하게 전한다",s:{S:2}},
+  ]},
+  {p:3,t:"나 너 좋아해. 우리 사귀자. 상대의 고백을 받은 순간 솔직한 감정은?",c:[
+    {txt:"호감만 유지하고 싶었는데, 굳이 사귀어서 진짜 내 모습을 상대에게 들키고 싶지 않다",s:{D:2,T:1}},
+    {txt:"나를 이렇게 좋아하다니, 상대를 통해 내 가치를 확인받은 느낌이다",s:{T:2}},
+    {txt:"이 완벽한 연기를 언제까지 유지할 수 있을까, 막막함과 피로감이 온다",s:{K:2}},
+    {txt:"드디어 내 사람이 생겼다는 안도와 동시에 상대를 절대 떠나보내지 말아야지 하는 집착이 솟구친다",s:{A:2}},
+    {txt:"상대와 함께할 안정적인 일상과 소통이 기대되고 든든하다",s:{S:2}},
+  ]},
+  {p:3,t:"사귀기로 하고 나니, 앞으로 상대에게 진짜 내 모습을 보여줘야 한다는 생각이 든다.",c:[
+    {txt:"사귀기 전보다 더 빡빡하게 나를 통제하고 상대에게 맞춘다",s:{K:2}},
+    {txt:"진짜 모습을 보여줬다가 상처받기 전에 언제든 도망칠 보험을 만들어둔다",s:{D:2}},
+    {txt:"찌질한 모습을 과장되게 상대에게 보여주며 이래도 사랑해? 극한의 테스트를 반복한다",s:{A:2}},
+    {txt:"내 단점은 숨기고 상대방의 단점을 쥐고 흔들며 관계의 우위를 점한다",s:{T:2}},
+    {txt:"이제 편하게 내 진짜 모습도 보여줘야지, 하며 자연스럽게 경계를 푼다",s:{S:2}},
+  ]},
+  {p:3,t:"연인이 된 후 상대가 아낌없이 헌신하고 돈을 쓰기 시작했다.",c:[
+    {txt:"내 가치에 대한 당연한 대가로 여기며, 상대의 헌신이 줄면 가차없이 떠날 마음을 먹는다",s:{T:2}},
+    {txt:"이 엄청난 헌신이 숨 막히고 상대에게 돌려줘야 할 빚처럼 느껴져 오히려 정이 떨어진다",s:{D:2}},
+    {txt:"받을 자격이 없는 걸 상대에게 들킬까봐 나도 무리해서 과도한 보답을 한다",s:{K:2}},
+    {txt:"상대의 헌신이 조금이라도 줄면 이제 날 사랑하지 않는구나, 하고 절망한다",s:{A:2}},
+    {txt:"진심으로 감사하며 나도 내 방식으로 상대에게 애정을 표현한다",s:{S:2}},
+  ]},
+  {p:3,t:"연애를 시작하면서 나의 개인 시간 일부를 상대에게 내줘야 한다.",c:[
+    {txt:"내 루틴이 깨지는 걸 극도로 혐오해서 연애보다 개인 시간을 사수한다",s:{D:2}},
+    {txt:"내 일상은 사라지고 24시간 상대방 스케줄에 내 삶을 100% 동기화한다",s:{K:2}},
+    {txt:"내줘야 한다는 게 당연하며, 상대도 나처럼 모든 일상을 포기하고 나만 보길 강요한다",s:{A:2}},
+    {txt:"나는 내 일상을 다 누리면서 상대만 나를 위해 대기하길 바란다",s:{T:2}},
+    {txt:"서로의 스케줄을 존중하며 건강한 밸런스를 맞춰간다",s:{S:2}},
+  ]},
+  {p:3,t:"이 사람과의 미래를 상상할 때, 솔직한 내 태도는?",c:[
+    {txt:"언젠가 끝나겠지. 상처받지 않으려고 늘 이별을 마음 한편에 준비해둔다",s:{D:2}},
+    {txt:"지금까지 해온 연기를 상대에게 평생 유지할 수 있을지 숨이 막혀온다",s:{K:2}},
+    {txt:"상대의 헌신과 조건이 유지되는 한에서만 미래를 그린다",s:{T:2}},
+    {txt:"상대가 떠날까봐 두려워서 결혼 등으로 빨리 묶어두고 싶다",s:{A:2}},
+    {txt:"갈등도 있겠지만 대화로 풀어가며 서로의 든든한 편이 될 것을 믿는다",s:{S:2}},
+  ]},
+];
+
+const TYPES={
+  T:{name:"트로피 수집가",eng:"Trophy Collector",one:"상대가 아니라 '나를 좋아한다는 사실'이 필요한 유형이에요.",
+    attach:"불안-몰두형",attachEng:"Anxious-Preoccupied",f4:"Fight + Fawn",fear:"매력 상실, 무가치감",
+    attachDesc:"버려질 것에 대한 공포가 크고, 상대방의 사랑을 끊임없이 확인하려는 유형이에요. 관계에 과몰입하고, 상대의 작은 반응 변화에도 크게 흔들려요.",
+    attachConnect:"일반적인 불안-몰두형은 상대와 하나가 되고 싶어 매달리지만, 트로피 수집가는 다른 방향으로 발현돼요. 상대 자체보다 '나를 좋아한다는 사실'을 잃지 않으려는 거예요.",
+    f4mine:["Fight","Fawn"],
+    f4desc:"Fight와 Fawn이 동시에 작동해요. 상대의 호감을 통제하려(Fight) 하면서, 거절당하지 않으려 자신을 지워요(Fawn).",
+    fearDesc:"가장 두려운 건 거절 자체가 아니에요. '나를 좋아하던 사람이 나를 덜 좋아하게 된 것'이에요. 진짜 마음이 향했다면 책임을 지고 선택해야 해요. 책임은 지기 싫고 상대가 주는 자극만 갖고 싶을 때, '마음 가는 대로 했다'는 말로 그 책임을 회피하게 돼요.",
+    cycle:"인정을 받아도 곧 불안해져요 → 다시 확인하려 해요 → 상대가 부담을 느껴요 → 반응이 줄어요 → 불안이 더 커져요.",
+    col:"#C4571A",bg:"#FBF0EB",
+    an:`타인의 호감을 사랑이 아닌 자존감 충전의 수단으로 사용하고 있어요. 상대 자체가 아니라 '내가 여전히 매력 있다'는 확인이 필요한 거예요. 가장 짜릿한 순간은 상대가 나를 원할 때고, 가장 불안한 순간은 그 관심이 식을 것 같을 때예요. 그 패턴을 지금 이렇게 정확히 보고 있다는 것 자체가 이미 균열이 생긴 거예요.`,
+    a1:`다음에 누군가에게 관심을 보일 때, 딱 한 번만 물어봐요. 이 사람이 좋아서인가, 아니면 이 사람이 나를 좋아하는 게 좋아서인가.`,
+    a2:`상대의 반응이 줄어들었다고 느낄 때, 확인하려는 충동이 올라오면 15분만 기다려봐요.`,
+    a3:`애매한 빈칸 — 아직 정의되지 않은 관계, 답이 없는 상태 — 을 견디는 연습을 해봐요. 그 빈칸을 최악의 상상으로 채우지 않고 그냥 비워두는 것부터 시작해봐요.`,
+    cards:["control","painlove"]},
+  A:{name:"불안의 파수꾼",eng:"Anxious Sentinel",one:"상대의 반응 하나하나가 생존 신호처럼 느껴지는 유형이에요.",
+    attach:"불안-몰두형",attachEng:"Anxious-Preoccupied",f4:"Fawn",fear:"버려짐, 거절",
+    attachDesc:"버려질 것에 대한 공포가 크고, 상대방의 사랑을 끊임없이 확인하려는 유형이에요.",
+    attachConnect:"24시간 상대의 반응을 스캔하면서, 조금이라도 이상한 신호가 오면 모든 에너지를 쏟아 확인하려 해요.",
+    f4mine:["Fawn"],
+    f4desc:"상대에게 맞춰서 위협(버려짐)을 없애려는 반응이에요.",
+    fearDesc:"가장 두려운 건 상대가 나를 두고 떠나는 것이에요.",
+    cycle:"확인해도 금방 또 불안해져요 → 더 자주 확인하려 해요 → 상대가 숨이 막혀요 → 거리를 두려 해요 → 불안이 폭발해요.",
+    col:"#3878B8",bg:"#EAF1FB",
+    an:`상대의 침묵 하나, 답장 속도 하나가 생존 신호처럼 읽혀요. 불안이 레이더가 돼서 24시간 상대를 스캔하고 있는 거예요. 정작 지치는 건 상대가 아니라 그 레이더를 돌리고 있는 자신이에요.`,
+    a1:`연락이 없을 때 핸드폰을 확인하기 전에, 3분 동안 그 불안을 그냥 느껴봐요. 불안은 파도예요. 가만히 있으면 정점을 찍고 가라앉아요.`,
+    a2:`상대의 반응이 늦을 때 '나 때문인가' 대신 '이 사람도 자기 삶이 있구나'로 해석을 바꿔보는 연습을 해봐요.`,
+    a3:`결과가 안 나온 상태, 답이 없는 빈칸을 마주할 때 — 그걸 즉시 채우려 하지 말고 5분만 그 모르는 상태로 머물러봐요.`,
+    cards:["ambiguity","painlove"]},
+  D:{name:"유리벽 뒤의 관찰자",eng:"Glass Wall Observer",one:"가까워질수록 거리를 두는, 친밀함이 두려운 유형이에요.",
+    attach:"공포-회피형",attachEng:"Fearful-Avoidant",f4:"Flight",fear:"친밀감, 자율성 상실",
+    attachDesc:"사랑받고 싶은 열망은 있지만 막상 상대가 가까워지면 본능적으로 밀어내요.",
+    attachConnect:"회피처럼 보이지만 사실은 상처받지 않기 위해 먼저 신경을 끄는 거예요. 무감각이 아니라 방어예요.",
+    f4mine:["Flight"],
+    f4desc:"멀어지고 회피하려는 반응이에요. 상처받기 전에 먼저 사라지거나, 관계가 깊어지기 전에 핑계를 찾아 도망쳐요.",
+    fearDesc:"가장 두려운 건 누군가에게 진짜로 얽매이는 것이에요.",
+    cycle:"가까워져요 → 불편해져요 → 거리를 둬요 → 상대가 다가와요 → 더 도망가요.",
+    col:"#1D9E75",bg:"#E1F5EE",
+    an:`무관심이 아니에요. 상처받기 전에 먼저 신경을 꺼버리는 거예요. 유리벽 너머에서 상대가 다가오는 걸 보면서도, 문을 여는 순간 잃을 것들이 더 무서운 거죠. 회피는 무감각이 아니라 방어예요.`,
+    a1:`상대가 가까워지려 할 때 거리를 두지 말고, 그 불편함을 딱 한 번만 더 견뎌봐요. 5분이라도 도망가지 않는 경험이 쌓여야 바뀌어요.`,
+    a2:`지금 곁에 있는 사람에게 평소보다 조금 더 솔직한 말을 한 가지 해봐요. 작은 취약함을 보여주는 연습이에요.`,
+    a3:`관계가 정의되지 않은 애매한 상태가 편하게 느껴진다면, 그게 진짜 편한 건지 도망칠 구멍을 만들어둔 건지 스스로에게 물어봐요.`,
+    cards:["engulfment","ambiguity"]},
+  K:{name:"천 개의 얼굴을 가진 거울",eng:"The Chameleon Mirror",one:"자기 자신을 지워가며 상대에게 맞추는 유형이에요.",
+    attach:"공포-회피형",attachEng:"Fearful-Avoidant",f4:"Fawn (극단형)",fear:"진짜 자신으로 거절당함",
+    attachDesc:"진짜 내 모습을 보여줬다가 거절당할 것에 대한 공포가 너무 커요.",
+    attachConnect:"Fawn의 극단적인 형태예요. 취향과 성격과 외모까지 통째로 개조해요.",
+    f4mine:["Fawn"],
+    f4desc:"거절당하지 않으려 자신을 완전히 지우는 반응이에요.",
+    fearDesc:"가장 두려운 건 가면을 벗었을 때 거절당하는 것이에요.",
+    cycle:"맞춰줘요 → 상대가 좋아해요 → 더 맞춰야 한다는 압박이 커져요 → 내가 뭔지 모르게 돼요 → 공허해져요.",
+    col:"#A84878",bg:"#FBEAF0",
+    an:`상대가 좋아하는 사람이 되려다 보니, 어느 순간 내가 뭘 좋아하는지 모르게 됐을 거예요. 이건 다정함이 아니에요. 거절당하지 않기 위한 생존 전략이에요. 그 에너지의 절반만 자신에게 써봐요.`,
+    a1:`오늘 하루, 상대가 무언가를 제안할 때 바로 동조하기 전에 한 박자 멈추고 스스로에게 물어봐요. 나는 이게 진짜 하고 싶은가.`,
+    a2:`내 취향이나 의견을 하나 솔직하게 말해봐요. 거절당해도 관계가 무너지지 않는다는 걸 경험해야 해요.`,
+    a3:`관계가 애매하게 남아있는 게 불안할 때, 억지로 라벨을 붙이거나 결론을 만들지 말고 그 비어있음을 그대로 둬봐요.`,
+    cards:["ambiguity"]},
+  S:{name:"뿌리 깊은 나무",eng:"The Rooted One",one:"흔들리면서도 중심을 잃지 않는 유형이에요.",
+    attach:"안정형",attachEng:"Secure Attachment",f4:"통합 — 자기인식",fear:"없음 (강점: 경계 인식)",
+    attachDesc:"자신의 감정과 경계를 꽤 잘 알고 있어요. 상대의 반응에 과하게 흔들리지 않고, 솔직하게 소통하는 편이에요.",
+    attachConnect:"완벽하게 안정적인 사람은 없어요. 흔들리는 순간에도 그게 흔들림인 걸 아는 것, 그게 이미 강점이에요.",
+    f4mine:[],
+    f4desc:"4F 방어기제를 자동으로 사용하기보다, 상황을 인식하고 선택적으로 반응하는 패턴이에요.",
+    fearDesc:"특별한 핵심 공포보다, 관계에서의 갈등이나 오해가 생겼을 때 그걸 직접 다루는 능력이 있어요.",
+    cycle:"흔들려요 → 인식해요 → 직면해요 → 소통해요 → 해결해요.",
+    col:"#4A7C20",bg:"#EAF3DE",
+    an:`자신의 감정과 경계를 꽤 잘 알고 있어요. 상대의 반응에 과하게 흔들리지 않고, 솔직하게 소통하는 편이에요. 완벽하게 안정적인 사람은 없어요. 흔들리는 순간에도 그게 흔들림인 걸 아는 것, 그게 이미 강점이에요.`,
+    a1:`지금의 건강한 패턴이 어떤 노력에서 왔는지 한 번 돌아봐요. 당연한 게 아니에요.`,
+    a2:`주변에 불안형이나 회피형 패턴으로 힘들어하는 사람이 있다면, 지금 아는 것들을 나눠줄 수 있어요.`,
+    a3:null,cards:[]},
+};
+
+const BNAMES={T:"트로피 수집가",A:"불안의 파수꾼",D:"유리벽 뒤의 관찰자",K:"천 개의 얼굴",S:"뿌리 깊은 나무"};
+const BCOLS={T:"#C4571A",A:"#3878B8",D:"#1D9E75",K:"#A84878",S:"#4A7C20"};
+const F4_ALL=[
+  {key:"Fight",desc:"통제하고 주도권을 쥐려는 반응. 상대를 조종하거나 관계의 우위를 점하려 해요."},
+  {key:"Flight",desc:"멀어지고 회피하려는 반응. 상처받기 전에 먼저 사라져요."},
+  {key:"Freeze",desc:"아무것도 못 하고 얼어붙는 반응. 압도되어 행동 자체가 멈춰요."},
+  {key:"Fawn",desc:"상대에게 맞춰 위협을 없애려는 반응. 거절당하지 않으려 자신을 지워요."},
+];
+
+const CONTENT_CARDS={
+  ambiguity:{title:"애매함을 못 견디는 마음",sub:"빈칸을 채우려는 뇌의 습관",col:"#185FA5",bg:"#E6F1FB",
+    secs:[
+      {l:"핵심 메커니즘",t:"불안을 일으키는 가장 큰 원인은 거절이 아니에요. 애매함을 견디지 못하는 거예요. 뇌는 빈칸을 가장 무서워해요. 답이 없는 상태를 견디지 못하고 자꾸 상상으로 채워 넣어요. 그리고 대부분 최악으로 채워요."},
+      {l:"빈칸을 채우는 세 가지 방식",t:"최악의 상상으로 채우기, 억지 서사로 채우기, 관계 강제로 규정하기 — 셋 다 애매함을 못 견뎌서 나오는 행동이에요."},
+      {l:"내성을 기르는 법",t:"멘탈이 단단한 사람들의 공통점은 답을 빨리 찾는 게 아니라, 모르는 상태를 견디는 힘이 있다는 거예요.",q:"열린 결말을 그대로 두는 것 — 모든 인연이 명확한 결론을 낼 필요는 없어요."}
+    ]},
+  control:{title:"통제는 사랑이 아니라 불안이다",sub:"의존욕구와 통제욕구의 동반 상승",col:"#993C1D",bg:"#FBF0EB",
+    secs:[
+      {l:"핵심 메커니즘",t:"통제하고 싶은 마음은 사랑이 커서가 아니에요. 그 사람을 잃을까봐 두려운 거예요. 의존욕구가 높을수록 통제욕구도 함께 올라가요."},
+      {l:"통제와 의존의 연결",t:"통제는 의존의 반대가 아니에요. 불안정한 의존을 유지하기 위한 전략이에요. 사랑해서 붙잡는 게 아니라, 잃는 게 두려워서 붙잡는 거예요."},
+      {l:"알아차림의 시작",t:"통제욕구를 낮추는 첫걸음은 큰 결심이 아니라, 일상의 작은 짜증을 알아차리는 거예요.",q:"사람을 가장 힘들게 하는 건 상황 그 자체가 아니라, 그 상황이 반드시 내 뜻대로 되어야 한다는 집착이다."}
+    ]},
+  painlove:{title:"고통의 크기 = 사랑의 크기?",sub:"도파민과 애착의 착각",col:"#993C1D",bg:"#FBF0EB",
+    secs:[
+      {l:"잘못 묶인 공식",t:"마음이 아프고 초조할 때 \"내가 이 사람을 정말 좋아하는구나\" 싶어져요. 고통의 크기로 사랑의 깊이를 재는 거예요. 하지만 그건 사랑의 증거가 아니라 뇌의 착각이에요."},
+      {l:"왜 평온함이 불안하게 느껴질까",t:"불안 애착을 가진 사람의 뇌는 평온함을 안전이 아니라 위험으로 읽어요. 아무 일도 없는 잔잔한 관계는 오히려 불안하고, 흔들리는 관계라야 살아있다고 느껴요."},
+      {l:"진짜 안정된 사랑",t:"아픈 만큼 사랑하는 게 아니라, 아파야만 사랑을 느낄 수 있게 길들여진 거예요.",q:"진짜 안정된 사랑은 심장을 두근거리게 하지 않는다. 오히려 편안하게 가라앉혀준다."}
+    ]},
+  engulfment:{title:"친밀감이 질식처럼 느껴질 때",sub:"회피형의 비활성화 전략",col:"#0F6E56",bg:"#E1F5EE",
+    secs:[
+      {l:"핵심 메커니즘",t:"관계가 깊어지고 상대가 헌신하기 시작할 때 갑자기 부담을 느끼는 건, 상대가 싫어져서가 아니에요. 나의 독립성이 침해당하고 상대에게 완전히 흡수되는 것을 견디지 못하기 때문이에요."},
+      {l:"왜 가장 좋을 때 도망칠까",t:"정서적으로 완전히 밀착되는 경험이 따뜻함이 아니라 질식으로 느껴져요. 상대가 깊이 들어오는 순간 뇌가 생존 위협을 느끼고, 단점을 확대해서 찾거나 거리를 벌려요."},
+      {l:"멘탈 근육",t:null,q:"누군가에게 온전히 기대고 기대음을 받는 그 통제 불가능한 친밀감을 감당할 멘탈 근육이 아직 없는 것뿐이다."}
+    ]}
+};
+
+let cur=0,scores={T:0,A:0,D:0,S:0,K:0},selections=[],timeData=[],qStart=0,changeCnt=0;
+let finalProfile=null,chatHistory=[],savedAnswers=[],backLog=[];
+
+function show(id){document.querySelectorAll('.scr').forEach(s=>s.classList.remove('on'));document.getElementById(id).classList.add('on');}
+function startQuiz(){show('s-quiz');renderQ();}
+
+function showPhaseCard(idx){
+  const ph=PHASES[idx];
+  document.getElementById('pc-bar').style.background=ph.col;
+  document.getElementById('pc-eye').textContent=ph.label;
+  document.getElementById('pc-eye').style.color=ph.col;
+  document.getElementById('pc-name').textContent=ph.name;
+  document.getElementById('pc-desc').textContent=ph.desc||'';
+  show('s-phase');
+}
+function continueQuiz(){show('s-quiz');renderQ();}
+
+function renderQ(){
+  const q=Qs[cur];
+  document.getElementById('prog').style.width=Math.round(cur/Qs.length*100)+'%';
+  document.getElementById('prog').style.background=PHASES[q.p].col;
+  const ph=PHASES[q.p];
+  document.getElementById('pbanner').style.background=ph.col+'18';
+  document.getElementById('pbdot').style.background=ph.col;
+  document.getElementById('pblabel').textContent=ph.label;
+  document.getElementById('pblabel').style.color=ph.col;
+  document.getElementById('pbname').textContent=ph.name;
+  document.getElementById('pbname').style.color=ph.col+'99';
+  document.getElementById('qnum').textContent='Q'+(cur+1);
+  document.getElementById('qtxt').textContent=q.t;
+  document.getElementById('qmeta').textContent=(cur+1)+' / '+Qs.length;
+  selections=savedAnswers[cur]?[...savedAnswers[cur]]:[];
+  changeCnt=0;qStart=Date.now();
+  document.getElementById('nxt').disabled=selections.length===0;
+  document.getElementById('prev-btn').disabled=cur===0;
+  const c=document.getElementById('choices');c.innerHTML='';
+  q.c.forEach((ch,i)=>{
+    const btn=document.createElement('div');
+    btn.className='ch'+(selections.includes(i)?' on':'');
+    btn.innerHTML=`<div class="rk" id="rk${i}">${selections.includes(i)?selections.indexOf(i)+1:'-'}</div><div class="ct">${ch.txt}</div>`;
+    btn.onclick=()=>toggleChoice(i,btn);
+    c.appendChild(btn);
+  });
+}
+
+function toggleChoice(i,el){
+  const idx=selections.indexOf(i);
+  if(idx!==-1){selections.splice(idx,1);el.classList.remove('on');}
+  else{selections.push(i);el.classList.add('on');}
+  changeCnt++;
+  document.querySelectorAll('.rk').forEach(r=>r.textContent='-');
+  selections.forEach((si,r)=>{document.querySelectorAll('.ch')[si].querySelector('.rk').textContent=r+1;});
+  document.getElementById('nxt').disabled=selections.length===0;
+}
+
+function prevQ(){
+  if(cur===0)return;
+  backLog.push({from:cur,at:Date.now()});
+  savedAnswers[cur]=[...selections];
+  cur--;
+  renderQ();
+}
+
+function nextQ(){
+  if(!selections.length)return;
+  const elapsed=Math.round((Date.now()-qStart)/1000);
+  const firstSel=selections[0];
+  timeData[cur]={q:cur,elapsed,changed:changeCnt>selections.length,sel:[...selections],firstSel,choiceText:Qs[cur].c[firstSel].txt};
+  savedAnswers[cur]=[...selections];
+  const q=Qs[cur];
+  selections.forEach((si,r)=>{
+    const s=q.c[si].s;const w=selections.length===1?1.5:(r===0?1.5:r===1?1:.6);
+    for(const k in s)scores[k]+=s[k]*w;
+  });
+  cur++;
+  if(cur<Qs.length){
+    const nextP=Qs[cur].p,prevP=Qs[cur-1].p;
+    if(nextP!==prevP&&nextP>0&&!savedAnswers[cur]) showPhaseCard(nextP);
+    else renderQ();
+  } else buildResult();
+}
+
+function buildResult(){
+  show('s-load');
+  setTimeout(()=>{
+    const sorted=Object.entries(scores).sort((a,b)=>b[1]-a[1]);
+    const top=sorted[0][0],second=sorted[1][0];
+    const t=TYPES[top];
+    const total=Object.values(scores).reduce((a,b)=>a+b,0)||1;
+    const topPct=Math.round(scores[top]/total*100),secPct=Math.round(scores[second]/total*100);
+    const isCombo=topPct-secPct<15,isNear=topPct-secPct<7;
+    const slowQs=Object.values(timeData).filter(d=>d&&d.elapsed>=12).sort((a,b)=>b.elapsed-a.elapsed).slice(0,2);
+    const changedQs=Object.values(timeData).filter(d=>d&&d.changed).slice(0,2);
+    const backQs=backLog.slice(0,2);
+    const distStr=sorted.map(([k])=>`${k}${Math.round(scores[k]/total*100)}`).join('/');
+    const profileCode=`[PSY-PROFILE v1]\n유형:${t.name}(${t.attach}/${t.f4})\n분포:${distStr}${slowQs.length?'\n장고:'+slowQs.map(d=>`Q${d.q+1}(${d.elapsed}초)`).join(','):''}${changedQs.length?'\n변경:'+changedQs.map(d=>`Q${d.q+1}`).join(','):''}${backQs.length?'\n재방문:'+backQs.map(b=>`Q${b.from}`).join(','):''}`;
+    finalProfile={top,second,isCombo,isNear,sorted,total,t,topPct,secPct,slowQs,changedQs,backQs,profileCode,scores};
+
+    let extra='';
+    const sq=slowQs[0],cq=changedQs[0];
+    if(sq)extra+=` Q${sq.q+1} "${Qs[sq.q].t.substring(0,18)}..." 에서 ${sq.elapsed}초를 머물렀어요.`;
+    if(cq&&(!sq||cq.q!==sq.q))extra+=` Q${cq.q+1} "${Qs[cq.q].t.substring(0,18)}..." 에서 선택을 바꿨어요.`;
+    const aiText=t.an+(extra?'\n\n'+extra:'');
+
+    let barsHtml='';
+    for(const [k] of sorted){
+      const p=Math.round(scores[k]/total*100);
+      const isNearBar=topPct-p<7&&k!==top;
+      barsHtml+=`<div class="bar-row"><div class="bar-meta"><span style="display:flex;align-items:center;gap:5px">${BNAMES[k]}${isNearBar?`<span style="font-size:10px;color:var(--accent);background:var(--accent-bg);padding:1px 6px;border-radius:99px">근접</span>`:''}${k===top?`<span style="font-size:10px;color:${t.col};background:${t.bg};padding:1px 6px;border-radius:99px">주 유형</span>`:''}</span><span>${p}%</span></div><div class="bar-track"><div class="bar-fill" style="width:${p}%;background:${BCOLS[k]}"></div></div></div>`;
+    }
+
+    let sigHtml='';
+    slowQs.forEach(d=>{
+      sigHtml+=`<div class="sig-item"><div class="sig-top"><span class="sig-badge slow">Q${d.q+1} — ${d.elapsed}초 고민</span></div><div class="sig-q">${Qs[d.q].t}</div><div class="sig-ans">선택: "${d.choiceText}"</div><div class="sig-m slow">가장 갈등하는 지점이에요. 변화 가능성이 가장 큰 영역이에요.</div></div>`;
+    });
+    changedQs.forEach(d=>{
+      if(slowQs.find(s=>s.q===d.q))return;
+      sigHtml+=`<div class="sig-item"><div class="sig-top"><span class="sig-badge changed">Q${d.q+1} — 선택 변경</span></div><div class="sig-q">${Qs[d.q].t}</div><div class="sig-ans">최종 선택: "${d.choiceText}"</div><div class="sig-m changed">처음 고른 게 진짜 본능이에요. 알고는 있지만 인정하기 싫었던 거예요.</div></div>`;
+    });
+    backQs.forEach(b=>{
+      const qIdx=b.from-1;
+      if(qIdx<0||qIdx>=Qs.length)return;
+      sigHtml+=`<div class="sig-item"><div class="sig-top"><span class="sig-badge back">Q${b.from} — 이전으로 돌아감</span></div><div class="sig-q">${Qs[qIdx].t}</div><div class="sig-m back">다시 생각하고 싶었던 지점이에요.</div></div>`;
+    });
+
+    const f4Html=F4_ALL.map(f=>{const m=t.f4mine&&t.f4mine.includes(f.key);return`<div class="f4-item${m?' mine':''}"><div class="f4-badge">${m?'내 유형':'참고'}</div><div class="f4-name">${f.key}</div><div class="f4-desc">${f.desc}</div></div>`;}).join('');
+
+    let comboHtml='';
+    if(isNear)comboHtml=`<div class="combo-near">${t.name}과 ${TYPES[second].name}이 거의 동등하게 작동하고 있어요 (${topPct}% vs ${secPct}%). 상황에 따라 두 패턴이 번갈아 나타나요.</div>`;
+    else if(isCombo)comboHtml=`<div class="combo">${t.name}과 ${TYPES[second].name}이 혼합된 복합형이에요.</div>`;
+
+    const cardKeys=t.cards||[];
+    let ccHtml='';
+    cardKeys.forEach((ck,idx)=>{
+      const cc=CONTENT_CARDS[ck];if(!cc)return;
+      const id='cc'+idx;
+      let secsHtml='';
+      cc.secs.forEach(s=>{secsHtml+=`<div class="cc-sec"><div class="cc-lbl">${s.l}</div>${s.t?`<div class="cc-text">${s.t}</div>`:''}${s.q?`<div class="cc-quote">${s.q}</div>`:''}</div>`;});
+      ccHtml+=`<div class="cc" id="${id}"><div class="exp-hd" onclick="toggleExp('${id}')" style="background:${cc.bg}"><div class="exp-hd-left"><div class="exp-eye" style="color:${cc.col}">읽을거리</div><div class="exp-title" style="color:${cc.col}">${cc.title}</div><div class="exp-hint">${cc.sub} — 눌러서 보기</div></div><div class="exp-arrow">∨</div></div><div class="exp-body" id="eb-${id}">${secsHtml}</div></div>`;
+    });
+
+    document.getElementById('res-header').innerHTML=`<div class="re">${t.attach} / ${t.f4}</div><div class="rn" style="color:${t.col}">${t.name}</div><div class="ro">${t.one}</div>${comboHtml}`;
+
+    document.getElementById('tb-result').innerHTML=`
+      <div class="sec-lbl">학술적 분류</div>
+      <div class="exp-card" id="ec1">
+        <div class="exp-hd" onclick="toggleExp('ec1')"><div class="exp-hd-left"><div class="exp-eye">애착 이론</div><div class="exp-title">${t.attach}</div><div class="exp-hint">${t.attachEng} — 눌러서 자세히 보기</div></div><div class="exp-arrow">∨</div></div>
+        <div class="exp-body" id="eb-ec1">
+          <div class="def-block"><div class="def-lbl">애착 이론이란?</div><div class="def-body">1960년대 심리학자 존 볼비(John Bowlby)가 제안한 이론이에요. 어린 시절 주 양육자와의 관계가 평생의 관계 패턴을 형성한다는 내용이에요.</div></div>
+          <div class="def-block"><div class="def-lbl">${t.attach}이란?</div><div class="def-title">${t.attachEng}</div><div class="def-body">${t.attachDesc}</div></div>
+          <div class="def-block"><div class="def-lbl">${t.name}과의 연결</div><div class="def-body">${t.attachConnect}</div></div>
+        </div>
+      </div>
+      <div class="exp-card" id="ec2">
+        <div class="exp-hd" onclick="toggleExp('ec2')"><div class="exp-hd-left"><div class="exp-eye">4F 방어기제</div><div class="exp-title">${t.f4}</div><div class="exp-hint">트라우마 반응 이론 — 눌러서 자세히 보기</div></div><div class="exp-arrow">∨</div></div>
+        <div class="exp-body" id="eb-ec2">
+          <div class="def-block"><div class="def-lbl">4F 방어기제란?</div><div class="def-body">위협적인 상황에서 인간이 보이는 4가지 본능적 반응이에요. 관계에서의 불안도 동일한 방어 회로를 작동시켜요.</div></div>
+          <div class="f4-grid">${f4Html}</div>
+          <div class="def-block"><div class="def-lbl">${t.name}의 작동 방식</div><div class="def-body">${t.f4desc}</div></div>
+        </div>
+      </div>
+      <div class="exp-card" id="ec3">
+        <div class="exp-hd" onclick="toggleExp('ec3')"><div class="exp-hd-left"><div class="exp-eye">심리 기저</div><div class="exp-title">핵심 공포와 작동 방식</div><div class="exp-hint">이 패턴이 왜 생기는지 — 눌러서 자세히 보기</div></div><div class="exp-arrow">∨</div></div>
+        <div class="exp-body" id="eb-ec3">
+          <div class="def-block"><div class="def-lbl">핵심 공포</div><div class="def-title">${t.fear}</div><div class="def-body">${t.fearDesc}</div></div>
+          <div class="def-block"><div class="def-lbl">악순환 구조</div><div class="def-body">${t.cycle}</div><div class="def-quote">인정받는 순간은 있지만, 그게 오래 가지 않는다는 걸 이미 경험으로 알고 있을 거예요.</div></div>
+        </div>
+      </div>
+      <div class="div"></div>
+      ${sigHtml?`<div class="sec-lbl">당신의 반응 신호</div>${sigHtml}<div class="div"></div>`:''}
+      <div class="sec-lbl">반응 분포</div>${barsHtml}
+      <div class="div"></div>
+      <div class="sec-lbl">맞춤 분석</div>
+      <div class="ai-box"><div class="ai-lbl">선택 패턴 + 반응 시간 기반</div><div class="ai-text">${aiText}</div></div>
+      ${ccHtml?`<div class="div"></div><div class="sec-lbl">더 읽어보면 좋은 이야기</div>${ccHtml}`:''}
+      <div class="div"></div>
+      <div class="sec-lbl">오늘부터 해볼 것</div>
+      <div class="action-box"><div class="action-n">처방 1</div><div class="action-t">${t.a1}</div></div>
+      <div class="action-box"><div class="action-n">처방 2</div><div class="action-t">${t.a2}</div></div>
+      ${t.a3?`<div class="action-box"><div class="action-n">처방 3</div><div class="action-t">${t.a3}</div></div>`:''}
+      <div class="div"></div>
+      <div class="sec-lbl">AI 상담 준비</div>
+      <div class="profile-box"><div class="ai-lbl">내 심리 프로필 코드</div><div style="font-size:12px;color:var(--text-sec);margin-bottom:7px;line-height:1.6">이 코드를 복사해서 Claude.ai에 붙여넣고 대화를 시작하면, 당신의 패턴을 아는 상태로 상담이 시작돼요.</div><div class="profile-code" id="pcode">${profileCode}</div><button class="copy-btn" id="cbtn" onclick="copyProfile()">프로필 코드 복사하기</button></div>
+      <button class="retry" onclick="restart()">처음부터 다시</button>
+    `;
+
+    document.getElementById('tb-chat').innerHTML=`
+      <div class="chat-guide"><strong>${t.name}</strong> 프로필 기반으로 반응을 제공해요.<br>더 깊은 상담은 프로필 코드를 복사해서 Claude.ai에서 이어가봐요.</div>
+      <div class="msgs" id="msgs"></div>
+      <div class="chat-input-row"><textarea class="chat-input" id="cinput" rows="1" placeholder="오늘 있었던 일을 말해줘요..." onkeydown="hk(event)" oninput="ar(this)"></textarea><button class="send-btn" id="sbtn" onclick="sendMsg()">전송</button></div>
+    `;
+    addMsg('ai',`${t.name} 결과가 나왔어요. 오늘 있었던 일이나 고민을 얘기해줘요.`);
+    show('s-result');
+  },1200);
+}
+
+function toggleExp(id){const c=document.getElementById(id);const b=document.getElementById('eb-'+id);const o=c.classList.toggle('open');b.classList.toggle('open',o);}
+function switchTab(n){document.querySelectorAll('.tab').forEach((t,i)=>t.classList.toggle('on',['result','chat'][i]===n));document.querySelectorAll('.tab-body').forEach((b,i)=>b.classList.toggle('on',['tb-result','tb-chat'][i]===`tb-${n}`));}
+function copyProfile(){navigator.clipboard.writeText(document.getElementById('pcode').textContent).then(()=>{const b=document.getElementById('cbtn');b.textContent='복사됐어요 ✓';b.classList.add('copied');setTimeout(()=>{b.textContent='프로필 코드 복사하기';b.classList.remove('copied');},2000);});}
+function addMsg(r,text){const m=document.getElementById('msgs');if(!m)return;const d=document.createElement('div');d.className=`msg ${r}`;d.innerHTML=`<div class="msg-bubble">${text}</div>`;m.appendChild(d);m.scrollTop=m.scrollHeight;}
+function sendMsg(){
+  const inp=document.getElementById('cinput');const text=inp.value.trim();if(!text)return;
+  inp.value='';ar(inp);document.getElementById('sbtn').disabled=true;
+  addMsg('user',text);
+  const {t}=finalProfile;
+  const rs=[`${t.name} 패턴에서 자주 나오는 반응이에요. 지금 느끼는 감정이 그 패턴과 어떻게 연결되는지 보이시나요?`,
+    `그 상황에서 핵심 공포인 '${t.fear}'가 작동한 것 같아요. 어떤 식으로 느껴졌는지 더 얘기해줄 수 있어요?`,
+    `테스트에서 나온 패턴이랑 정확히 연결되네요. 그 순간 가장 먼저 든 생각이 뭐였어요?`,
+    `${t.attach} 성향을 가진 사람들이 가장 힘들어하는 순간이에요. 지금 어떻게 대처하고 싶어요?`,
+    `그 감정이 상대에 대한 건지, 상대가 나에게 주는 무언가에 대한 건지 한번 구분해보면 어때요?`];
+  setTimeout(()=>{addMsg('ai',rs[Math.floor(Math.random()*rs.length)]);document.getElementById('sbtn').disabled=false;document.getElementById('cinput').focus();},700);
+}
+function hk(e){if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendMsg();}}
+function ar(el){el.style.height='auto';el.style.height=Math.min(el.scrollHeight,100)+'px';}
+function restart(){scores={T:0,A:0,D:0,S:0,K:0};cur=0;selections=[];timeData=[];savedAnswers=[];backLog=[];finalProfile=null;show('s-intro');}
+</script>
+</body>
+</html>
