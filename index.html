@@ -88,11 +88,6 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);min-height:1
 
 /* RESULT */
 .res{padding-top:2.5rem;animation:fi .4s ease}
-.tabs{display:flex;border-bottom:.5px solid var(--border);margin-bottom:1.5rem}
-.tab{padding:10px 18px;font-size:13px;font-weight:500;color:var(--text-muted);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-.5px;transition:color .15s,border-color .15s}
-.tab.on{color:var(--text);border-bottom-color:var(--text)}
-.tab-body{display:none}
-.tab-body.on{display:block}
 .re{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--text-muted);margin-bottom:8px}
 .rn{font-size:28px;font-weight:600;line-height:1.2;margin-bottom:6px;letter-spacing:-0.02em}
 .ro{font-size:14px;color:var(--text-sec);line-height:1.7;margin-bottom:1.25rem}
@@ -114,10 +109,10 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);min-height:1
 .exp-body-open{padding:0 16px 16px;background:var(--surface)}
 .exp-body.open{display:block}
 
-.def-block{padding:11px 13px;background:var(--surface1);border-radius:9px;margin-bottom:7px;border:.5px solid var(--border)}
-.def-block.muted{background:transparent;border:.5px dashed var(--border);opacity:.55;padding:9px 12px}
+.def-block{padding:4px 0 11px;background:transparent;border-radius:0;margin-bottom:7px;border:none;border-bottom:.5px solid var(--border)}
+.def-block.muted{background:transparent;border:.5px dashed var(--border);border-radius:9px;opacity:.55;padding:9px 12px}
 .def-block.muted .def-lbl{font-size:9px}
-.def-block.key{background:var(--accent-bg);border:1px solid var(--accent-border);padding:13px 15px}
+.def-block.key{background:var(--accent-bg);border:1px solid var(--accent-border);border-radius:9px;padding:13px 15px}
 .def-lbl{font-size:10px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--text-muted);margin-bottom:4px}
 .def-block.key .def-lbl{color:var(--accent)}
 .def-title{font-size:13px;font-weight:500;color:var(--text);margin-bottom:3px}
@@ -190,18 +185,6 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);min-height:1
 .cc-quote{font-size:12px;color:var(--text);line-height:1.65;font-style:italic;padding:8px 10px;background:var(--surface);border-radius:6px;border-left:2px solid var(--border-strong);margin-top:6px}
 
 /* CHAT */
-.chat-guide{padding:12px 14px;background:var(--surface);border-radius:10px;margin-bottom:1rem;font-size:12px;color:var(--text-sec);line-height:1.7}
-.chat-guide strong{color:var(--text)}
-.msgs{display:flex;flex-direction:column;gap:12px;margin-bottom:1rem;min-height:100px}
-.msg{max-width:88%}
-.msg.user{align-self:flex-end}
-.msg.ai{align-self:flex-start}
-.msg-bubble{padding:11px 14px;border-radius:12px;font-size:13px;line-height:1.7}
-.msg.user .msg-bubble{background:var(--text);color:var(--bg);border-radius:12px 12px 3px 12px}
-.msg.ai .msg-bubble{background:var(--surface);color:var(--text);border-radius:12px 12px 12px 3px}
-.chat-input-row{display:flex;gap:8px;align-items:flex-end}
-.chat-input{flex:1;padding:11px 14px;border-radius:10px;border:.5px solid var(--border);background:var(--surface);font-size:13px;color:var(--text);resize:none;font-family:var(--font);line-height:1.6;outline:none;max-height:100px}
-.chat-input:focus{border-color:var(--border-strong)}
 .send-btn{padding:11px 18px;border-radius:10px;font-size:13px;font-weight:600;cursor:pointer;background:var(--text);color:var(--bg);border:none;flex-shrink:0;transition:opacity .15s}
 .send-btn:hover{opacity:.85}
 .send-btn:disabled{opacity:.25;cursor:not-allowed}
@@ -277,12 +260,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);min-height:1
 <div id="s-result" class="scr">
   <div class="res">
     <div id="res-header"></div>
-    <div class="tabs">
-      <div class="tab on" onclick="switchTab('result')">결과 리포트</div>
-      <div class="tab" onclick="switchTab('chat')">AI 상담</div>
-    </div>
-    <div class="tab-body on" id="tb-result"></div>
-    <div class="tab-body" id="tb-chat"></div>
+    <div id="tb-result"></div>
   </div>
 </div>
 
@@ -761,7 +739,7 @@ function buildResult(){
       const id='cc'+idx;
       let secsHtml='';
       cc.secs.forEach(s=>{secsHtml+=`<div class="cc-sec"><div class="cc-lbl">${s.l}</div>${s.t?`<div class="cc-text">${s.t}</div>`:''}${s.q?`<div class="cc-quote">${s.q}</div>`:''}</div>`;});
-      ccHtml+=`<div class="cc" id="${id}"><div class="exp-hd" onclick="toggleExp('${id}')"><div class="exp-hd-left"><div class="exp-title">${cc.title}</div><div class="exp-hint">${cc.sub} — 눌러서 보기</div></div><div class="exp-arrow">∨</div></div><div class="exp-body" id="eb-${id}">${secsHtml}</div></div>`;
+      ccHtml+=`<div class="cc" id="${id}"><div class="exp-hd" onclick="toggleExp('${id}')" style="background:${cc.bg}"><div class="exp-hd-left"><div class="exp-eye" style="color:${cc.col}">${cc.sub}</div><div class="exp-title" style="color:${cc.col}">${cc.title}</div></div><div class="exp-arrow">∨</div></div><div class="exp-body" id="eb-${id}">${secsHtml}</div></div>`;
     });
 
     document.getElementById('res-header').innerHTML=`<div class="re">${t.attach} / ${t.f4}</div><div class="rn" style="color:${t.col}">${t.name}</div><div class="ro">${t.one}</div>${comboHtml}`;
@@ -798,7 +776,7 @@ function buildResult(){
       ${sigHtml?`<div class="sec-lbl">선택지 반응 상세 분석</div>${sigHtml}<div class="div"></div>`:''}
       <div class="sec-lbl">맞춤 분석</div>
       <div class="ai-box"><div class="ai-lbl">선택 패턴 + 선택지 반응 시간 기반</div><div class="ai-text">${aiText}</div></div>
-      ${ccHtml?`<div class="div"></div><div class="sec-lbl">더 읽어보면 좋은 이야기</div>${ccHtml}`:''}
+      ${ccHtml?`<div class="div"></div><div class="sec-lbl">심화 분석</div>${ccHtml}`:''}
       <div class="div"></div>
       <div class="sec-lbl">오늘부터 해볼 것</div>
       <div class="action-box"><div class="action-n">처방 1</div><div class="action-t">${t.a1}</div></div>
@@ -819,34 +797,11 @@ function buildResult(){
       </div>
       <button class="retry" onclick="restart()" style="margin-top:8px">처음부터 다시</button>
     `;
-
-    document.getElementById('tb-chat').innerHTML=`
-      <div class="chat-guide"><strong>${t.name}</strong> 프로필 기반으로 반응을 제공해요.<br>더 깊은 상담은 프로필 코드를 복사해서 Claude.ai에서 이어가봐요.</div>
-      <div class="msgs" id="msgs"></div>
-      <div class="chat-input-row"><textarea class="chat-input" id="cinput" rows="1" placeholder="오늘 있었던 일을 말해줘요..." onkeydown="hk(event)" oninput="ar(this)"></textarea><button class="send-btn" id="sbtn" onclick="sendMsg()">전송</button></div>
-    `;
-    addMsg('ai',`${t.name} 결과가 나왔어요. 오늘 있었던 일이나 고민을 얘기해줘요.`);
     show('s-result');
   },1200);
 }
 
 function toggleExp(id){const c=document.getElementById(id);const b=document.getElementById('eb-'+id);const o=c.classList.toggle('open');b.classList.toggle('open',o);}
-function switchTab(n){document.querySelectorAll('.tab').forEach((t,i)=>t.classList.toggle('on',['result','chat'][i]===n));document.querySelectorAll('.tab-body').forEach((b,i)=>b.classList.toggle('on',['tb-result','tb-chat'][i]===`tb-${n}`));}
-function addMsg(r,text){const m=document.getElementById('msgs');if(!m)return;const d=document.createElement('div');d.className=`msg ${r}`;d.innerHTML=`<div class="msg-bubble">${text}</div>`;m.appendChild(d);m.scrollTop=m.scrollHeight;}
-function sendMsg(){
-  const inp=document.getElementById('cinput');const text=inp.value.trim();if(!text)return;
-  inp.value='';ar(inp);document.getElementById('sbtn').disabled=true;
-  addMsg('user',text);
-  const {t}=finalProfile;
-  const rs=[`${t.name} 패턴에서 자주 나오는 반응이에요. 지금 느끼는 감정이 그 패턴과 어떻게 연결되는지 보이시나요?`,
-    `그 상황에서 핵심 공포인 '${t.fear}'가 작동한 것 같아요. 어떤 식으로 느껴졌는지 더 얘기해줄 수 있어요?`,
-    `테스트에서 나온 패턴이랑 정확히 연결되네요. 그 순간 가장 먼저 든 생각이 뭐였어요?`,
-    `${t.attach} 성향을 가진 사람들이 가장 힘들어하는 순간이에요. 지금 어떻게 대처하고 싶어요?`,
-    `그 감정이 상대에 대한 건지, 상대가 나에게 주는 무언가에 대한 건지 한번 구분해보면 어때요?`];
-  setTimeout(()=>{addMsg('ai',rs[Math.floor(Math.random()*rs.length)]);document.getElementById('sbtn').disabled=false;document.getElementById('cinput').focus();},700);
-}
-function hk(e){if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendMsg();}}
-function ar(el){el.style.height='auto';el.style.height=Math.min(el.scrollHeight,100)+'px';}
 function restart(){scores={T:0,A:0,D:0,S:0,K:0};cur=0;selections=[];timeData=[];savedAnswers=[];backLog=[];finalProfile=null;show('s-intro');}
 
 function showSubType(key){
@@ -884,7 +839,7 @@ function buildExportData(){
     changed_answer:d.changed
   }));
   return {
-    version:"v17",
+    version:"v20",
     timestamp:new Date().toISOString(),
     primary_type:fp.t.name,
     primary_type_eng:fp.t.eng,
