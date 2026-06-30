@@ -144,6 +144,11 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);min-height:1
 .sig-m.back{color:#3B6D11;background:#EAF3DE}
 
 .bar-row{margin-bottom:9px}
+.view-type-btn{font-size:11px;color:var(--text-muted);cursor:pointer;text-decoration:underline;text-underline-offset:2px;margin-top:3px;display:inline-block}
+.view-type-btn:hover{color:var(--text)}
+#subtype-panel{display:none;margin-top:10px;padding:14px 16px;border-radius:11px;border:.5px dashed var(--border-strong);background:var(--surface)}
+#subtype-panel.on{display:block}
+.subtype-close{font-size:11px;color:var(--text-muted);cursor:pointer;text-decoration:underline;float:right}
 .bar-meta{display:flex;justify-content:space-between;font-size:12px;color:var(--text-sec);margin-bottom:3px;align-items:center}
 .bar-track{height:4px;background:var(--border);border-radius:2px;overflow:hidden}
 .bar-fill{height:100%;border-radius:2px;transition:width .8s ease}
@@ -156,6 +161,13 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);min-height:1
 .action-t{font-size:13px;color:var(--text);line-height:1.7}
 
 .profile-box{background:var(--surface);border-radius:11px;padding:1.25rem;margin-bottom:1rem}
+.share-box{background:var(--accent-bg);border:1px solid var(--accent-border);border-radius:11px;padding:1.25rem;margin-bottom:14px}
+.share-lbl{font-size:10px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--accent);margin-bottom:8px}
+.share-desc{font-size:12px;color:var(--text-sec);line-height:1.65;margin-bottom:12px}
+.share-btn{width:100%;padding:12px;border-radius:9px;font-size:13px;font-weight:600;cursor:pointer;background:var(--accent);color:#FFF8F4;border:none;transition:opacity .15s}
+.share-btn:hover{opacity:.9}
+.share-btn:disabled{opacity:.6;cursor:not-allowed}
+.share-note{font-size:11px;color:var(--text-muted);text-align:center;margin-top:8px;line-height:1.6}
 .profile-code{font-family:monospace;font-size:12px;color:var(--text-sec);background:var(--surface2);padding:10px 12px;border-radius:7px;margin:8px 0;line-height:1.6;word-break:break-all}
 .copy-btn{width:100%;padding:11px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;background:var(--text);color:var(--bg);border:none;transition:opacity .15s;margin-top:4px}
 .copy-btn:hover{opacity:.85}
@@ -408,7 +420,7 @@ const Qs=[
     {txt:"내 단점을 덮으려 상대방의 더 큰 단점을 찾아 공격한다",s:{T:2}},
     {txt:"들켰네. 나 이런 면도 좀 있어, 하고 쑥스럽지만 인정한다",s:{S:2}},
   ]},
-  {p:2,t:"많이 편해지면서 연락 패턴이 느슨해지고 안정화됐다.",c:[
+  {p:2,t:"사이가 많이 편해지면서 상대의 연락 패턴이 느슨해지고 안정화됐다.",c:[
     {txt:"혹시 잡은 물고기 취급하는 건가 싶어, 긴장감이 사라지자 상대에게 버려질까봐 불안이 온다",s:{A:2}},
     {txt:"상대가 더 이상 나한테 안달 내지 않자 도파민이 떨어져 질투 유발 작전을 쓴다",s:{T:2}},
     {txt:"내 매력이 떨어진 건가 싶어 상대 취향에 맞는 이벤트를 억지로 기획한다",s:{K:2}},
@@ -583,6 +595,16 @@ const CONTENT_CARDS={
 
 let cur=0,scores={T:0,A:0,D:0,S:0,K:0},selections=[],timeData=[],qStart=0,changeCnt=0;
 let finalProfile=null,chatHistory=[],savedAnswers=[],backLog=[];
+let hiddenAccum=0,hiddenSince=null;
+
+document.addEventListener('visibilitychange',()=>{
+  if(document.hidden){
+    hiddenSince=Date.now();
+  } else if(hiddenSince!==null){
+    hiddenAccum+=Date.now()-hiddenSince;
+    hiddenSince=null;
+  }
+});
 
 function show(id){document.querySelectorAll('.scr').forEach(s=>s.classList.remove('on'));document.getElementById(id).classList.add('on');}
 function startQuiz(){show('s-quiz');renderQ();}
@@ -613,7 +635,7 @@ function renderQ(){
   document.getElementById('qtxt').textContent=q.t;
   document.getElementById('qmeta').textContent=(cur+1)+' / '+Qs.length;
   selections=savedAnswers[cur]?[...savedAnswers[cur]]:[];
-  changeCnt=0;qStart=Date.now();
+  changeCnt=0;qStart=Date.now();hiddenAccum=0;hiddenSince=document.hidden?Date.now():null;
   document.getElementById('nxt').disabled=selections.length===0;
   document.getElementById('prev-btn').disabled=cur===0;
   const c=document.getElementById('choices');c.innerHTML='';
@@ -646,13 +668,22 @@ function prevQ(){
 
 function nextQ(){
   if(!selections.length)return;
-  const elapsed=Math.round((Date.now()-qStart)/1000);
+  // if tab is still hidden when answering (shouldn't normally happen, but safe-guard), close out the open hidden window
+  if(hiddenSince!==null){hiddenAccum+=Date.now()-hiddenSince;hiddenSince=null;}
+  const rawElapsedMs=Date.now()-qStart;
+  const cleanElapsedMs=Math.max(0,rawElapsedMs-hiddenAccum);
+  const elapsed=Math.round(cleanElapsedMs/1000);
+  const unreliable=elapsed>60; // even after subtracting background time, anything over a minute is treated as noise, not real deliberation
   const firstSel=selections[0];
-  timeData[cur]={q:cur,elapsed,changed:changeCnt>selections.length,sel:[...selections],firstSel,choiceText:Qs[cur].c[firstSel].txt};
+  const wasChanged=changeCnt>selections.length;
+  timeData[cur]={q:cur,elapsed,changed:wasChanged,sel:[...selections],firstSel,choiceText:Qs[cur].c[firstSel].txt,unreliable};
   savedAnswers[cur]=[...selections];
   const q=Qs[cur];
   selections.forEach((si,r)=>{
-    const s=q.c[si].s;const w=selections.length===1?1.5:(r===0?1.5:r===1?1:.6);
+    const s=q.c[si].s;
+    let w=selections.length===1?1.5:(r===0?1.5:r===1?1:.6);
+    // rank-0 selection that survived changes gets a small bonus — it's the one that stuck
+    if(r===0&&wasChanged)w*=1.1;
     for(const k in s)scores[k]+=s[k]*w;
   });
   cur++;
@@ -672,7 +703,7 @@ function buildResult(){
     const total=Object.values(scores).reduce((a,b)=>a+b,0)||1;
     const topPct=Math.round(scores[top]/total*100),secPct=Math.round(scores[second]/total*100);
     const isCombo=topPct-secPct<15,isNear=topPct-secPct<7;
-    const slowQs=Object.values(timeData).filter(d=>d&&d.elapsed>=12).sort((a,b)=>b.elapsed-a.elapsed).slice(0,2);
+    const slowQs=Object.values(timeData).filter(d=>d&&d.elapsed>=12&&!d.unreliable).sort((a,b)=>b.elapsed-a.elapsed).slice(0,2);
     const changedQs=Object.values(timeData).filter(d=>d&&d.changed).slice(0,2);
     const backQs=backLog.slice(0,2);
     const distStr=sorted.map(([k])=>`${k}${Math.round(scores[k]/total*100)}`).join('/');
@@ -689,7 +720,8 @@ function buildResult(){
     for(const [k] of sorted){
       const p=Math.round(scores[k]/total*100);
       const isNearBar=topPct-p<7&&k!==top;
-      barsHtml+=`<div class="bar-row"><div class="bar-meta"><span style="display:flex;align-items:center;gap:5px">${BNAMES[k]}${isNearBar?`<span style="font-size:10px;color:var(--accent);background:var(--accent-bg);padding:1px 6px;border-radius:99px">근접</span>`:''}${k===top?`<span style="font-size:10px;color:${t.col};background:${t.bg};padding:1px 6px;border-radius:99px">주 유형</span>`:''}</span><span>${p}%</span></div><div class="bar-track"><div class="bar-fill" style="width:${p}%;background:${BCOLS[k]}"></div></div></div>`;
+      const viewBtn=k!==top?`<span class="view-type-btn" onclick="showSubType('${k}')">이 유형 결과 보기 →</span>`:'';
+      barsHtml+=`<div class="bar-row"><div class="bar-meta"><span style="display:flex;align-items:center;gap:5px">${BNAMES[k]}${isNearBar?`<span style="font-size:10px;color:var(--accent);background:var(--accent-bg);padding:1px 6px;border-radius:99px">근접</span>`:''}${k===top?`<span style="font-size:10px;color:${t.col};background:${t.bg};padding:1px 6px;border-radius:99px">주 유형</span>`:''}</span><span>${p}%</span></div><div class="bar-track"><div class="bar-fill" style="width:${p}%;background:${BCOLS[k]}"></div></div>${viewBtn}</div>`;
     }
 
     let sigHtml='';
@@ -752,6 +784,7 @@ function buildResult(){
       <div class="div"></div>
       ${sigHtml?`<div class="sec-lbl">당신의 반응 신호</div>${sigHtml}<div class="div"></div>`:''}
       <div class="sec-lbl">반응 분포</div>${barsHtml}
+      <div id="subtype-panel"></div>
       <div class="div"></div>
       <div class="sec-lbl">맞춤 분석</div>
       <div class="ai-box"><div class="ai-lbl">선택 패턴 + 반응 시간 기반</div><div class="ai-text">${aiText}</div></div>
@@ -762,9 +795,19 @@ function buildResult(){
       <div class="action-box"><div class="action-n">처방 2</div><div class="action-t">${t.a2}</div></div>
       ${t.a3?`<div class="action-box"><div class="action-n">처방 3</div><div class="action-t">${t.a3}</div></div>`:''}
       <div class="div"></div>
-      <div class="sec-lbl">AI 상담 준비</div>
-      <div class="profile-box"><div class="ai-lbl">내 심리 프로필 코드</div><div style="font-size:12px;color:var(--text-sec);margin-bottom:7px;line-height:1.6">이 코드를 복사해서 Claude.ai에 붙여넣고 대화를 시작하면, 당신의 패턴을 아는 상태로 상담이 시작돼요.</div><div class="profile-code" id="pcode">${profileCode}</div><button class="copy-btn" id="cbtn" onclick="copyProfile()">프로필 코드 복사하기</button></div>
-      <button class="retry" onclick="restart()">처음부터 다시</button>
+      <div class="sec-lbl">결과 내보내기</div>
+      <div class="share-box">
+        <div class="share-lbl">개발에 참여하기</div>
+        <div class="share-desc">당신의 익명 데이터는 이 프로그램을 더 정확하게 만드는 데 쓰여요. 어떤 질문에서 사람들이 가장 많이 흔들리는지, 어떤 패턴이 자주 나타나는지 — 그걸 알아야 다음 버전이 더 정확해져요.</div>
+        <button class="share-btn" id="sharebtn" onclick="shareResult()">개발에 익명 데이터로 참여하기</button>
+        <div class="share-note">개인을 특정할 수 없는 형태로만 전달돼요</div>
+      </div>
+      <div class="profile-box">
+        <div class="ai-lbl">내 결과 파일 다운로드</div>
+        <div style="font-size:12px;color:var(--text-sec);margin-bottom:10px;line-height:1.6">유형, 반응 분포, 문항별 답변과 고민 시간까지 담긴 파일이에요. 이 파일을 다른 AI 대화창에 첨부하면, 처음부터 당신의 패턴을 아는 상태로 대화를 시작할 수 있어요.</div>
+        <button class="copy-btn" id="dlbtn" onclick="downloadResult()">결과 파일 다운로드 (.json)</button>
+      </div>
+      <button class="retry" onclick="restart()" style="margin-top:8px">처음부터 다시</button>
     `;
 
     document.getElementById('tb-chat').innerHTML=`
@@ -779,7 +822,6 @@ function buildResult(){
 
 function toggleExp(id){const c=document.getElementById(id);const b=document.getElementById('eb-'+id);const o=c.classList.toggle('open');b.classList.toggle('open',o);}
 function switchTab(n){document.querySelectorAll('.tab').forEach((t,i)=>t.classList.toggle('on',['result','chat'][i]===n));document.querySelectorAll('.tab-body').forEach((b,i)=>b.classList.toggle('on',['tb-result','tb-chat'][i]===`tb-${n}`));}
-function copyProfile(){navigator.clipboard.writeText(document.getElementById('pcode').textContent).then(()=>{const b=document.getElementById('cbtn');b.textContent='복사됐어요 ✓';b.classList.add('copied');setTimeout(()=>{b.textContent='프로필 코드 복사하기';b.classList.remove('copied');},2000);});}
 function addMsg(r,text){const m=document.getElementById('msgs');if(!m)return;const d=document.createElement('div');d.className=`msg ${r}`;d.innerHTML=`<div class="msg-bubble">${text}</div>`;m.appendChild(d);m.scrollTop=m.scrollHeight;}
 function sendMsg(){
   const inp=document.getElementById('cinput');const text=inp.value.trim();if(!text)return;
@@ -796,6 +838,89 @@ function sendMsg(){
 function hk(e){if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendMsg();}}
 function ar(el){el.style.height='auto';el.style.height=Math.min(el.scrollHeight,100)+'px';}
 function restart(){scores={T:0,A:0,D:0,S:0,K:0};cur=0;selections=[];timeData=[];savedAnswers=[];backLog=[];finalProfile=null;show('s-intro');}
+
+function showSubType(key){
+  const t=TYPES[key];
+  const panel=document.getElementById('subtype-panel');
+  const f4Html=F4_ALL.map(f=>{const m=t.f4mine&&t.f4mine.includes(f.key);return`<div class="f4-item${m?' mine':''}"><div class="f4-badge">${m?'해당':'참고'}</div><div class="f4-name">${f.key}</div><div class="f4-desc">${f.desc}</div></div>`;}).join('');
+  panel.innerHTML=`
+    <span class="subtype-close" onclick="document.getElementById('subtype-panel').classList.remove('on')">닫기 ×</span>
+    <div style="font-size:11px;color:var(--text-muted);margin-bottom:4px">참고 유형 — 주 유형은 아니지만 반응에서 일부 나타났어요</div>
+    <div style="font-size:20px;font-weight:600;color:${t.col};margin-bottom:4px">${t.name}</div>
+    <div style="font-size:13px;color:var(--text-sec);line-height:1.65;margin-bottom:12px">${t.one}</div>
+    <div class="def-block"><div class="def-lbl">애착 이론</div><div class="def-title">${t.attach}</div><div class="def-body">${t.attachDesc}</div></div>
+    <div class="f4-grid" style="margin-top:8px">${f4Html}</div>
+    <div class="def-block" style="margin-top:8px"><div class="def-lbl">핵심 공포</div><div class="def-title">${t.fear}</div><div class="def-body">${t.fearDesc}</div></div>
+  `;
+  panel.classList.add('on');
+  panel.scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+
+function buildExportData(){
+  const fp=finalProfile;
+  if(!fp)return null;
+  const answersDetail=Object.values(timeData).filter(Boolean).map(d=>({
+    question_num:d.q+1,
+    question_text:Qs[d.q].t,
+    chosen_answer:d.choiceText,
+    seconds_spent:d.elapsed,
+    timing_reliable:!d.unreliable,
+    changed_answer:d.changed
+  }));
+  return {
+    version:"v11",
+    timestamp:new Date().toISOString(),
+    primary_type:fp.t.name,
+    primary_type_eng:fp.t.eng,
+    attachment_style:fp.t.attach,
+    defense_mechanism:fp.t.f4,
+    score_distribution:fp.sorted.map(([k,v])=>({type:BNAMES[k],type_code:k,score:v,percent:Math.round(v/fp.total*100)})),
+    is_combo:fp.isCombo,
+    is_near_combo:fp.isNear,
+    slow_questions:fp.slowQs.map(d=>({q:d.q+1,seconds:d.elapsed,answer:d.choiceText})),
+    changed_questions:fp.changedQs.map(d=>({q:d.q+1,final_answer:d.choiceText})),
+    back_navigations:fp.backQs.map(b=>({q:b.from})),
+    all_answers:answersDetail
+  };
+}
+
+function downloadResult(){
+  const data=buildExportData();
+  if(!data)return;
+  const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  a.href=url;
+  a.download=`애착유형결과_${data.primary_type}_${Date.now()}.json`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
+function shareResult(){
+  const data=buildExportData();
+  if(!data)return;
+  const btn=document.getElementById('sharebtn');
+  const origText=btn.textContent;
+  btn.textContent='전송 중...';
+  btn.disabled=true;
+
+  const formUrl='https://docs.google.com/forms/d/e/1FAIpQLScN2lWU7hK-zei4KLTHl9zWaPohTzFdGBGIOzQEJF8zXr0xPA/formResponse';
+  const formData=new FormData();
+  formData.append('entry.700347402', JSON.stringify(data));
+
+  fetch(formUrl,{method:'POST',mode:'no-cors',body:formData})
+    .then(()=>{
+      btn.textContent='참여 완료, 고마워요 ✓';
+      setTimeout(()=>{btn.textContent=origText;btn.disabled=false;},2500);
+    })
+    .catch(()=>{
+      btn.textContent='전송 실패 — 다시 시도해줘요';
+      setTimeout(()=>{btn.textContent=origText;btn.disabled=false;},2500);
+    });
+}
+
 </script>
 </body>
 </html>
