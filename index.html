@@ -3,6 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
 <title>내 감정의 배후를 스스로 밝혀내는 곳</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -97,7 +100,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);min-height:1
 .sec-lbl{font-size:10px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--text-muted);margin-bottom:10px}
 
 .exp-card{border:.5px solid var(--border);border-radius:11px;margin-bottom:8px;overflow:hidden}
-.exp-hd{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;cursor:pointer;background:var(--surface);user-select:none;gap:12px}
+.exp-hd{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;cursor:pointer;background:#FFFFFF;user-select:none;gap:12px}
 .exp-hd:hover{background:var(--surface2)}
 .exp-hd-left{flex:1;min-width:0}
 .exp-eye{font-size:10px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:var(--text-muted);margin-bottom:3px}
@@ -105,8 +108,8 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);min-height:1
 .exp-hint{font-size:11px;color:var(--text-muted);margin-top:2px}
 .exp-arrow{font-size:18px;color:var(--text-muted);transition:transform .2s;flex-shrink:0;line-height:1}
 .exp-card.open .exp-arrow{transform:rotate(180deg)}
-.exp-body{display:none;padding:0 16px 16px;background:var(--surface)}
-.exp-body-open{padding:0 16px 16px;background:var(--surface)}
+.exp-body{display:none;padding:0 16px 16px;background:#FFFFFF}
+.exp-body-open{padding:0 16px 16px;background:#FFFFFF}
 .exp-body.open{display:block}
 
 .def-block{padding:4px 0 11px;background:transparent;border-radius:0;margin-bottom:7px;border:none;border-bottom:.5px solid var(--border)}
@@ -694,9 +697,33 @@ function buildResult(){
     const slowQs=Object.values(timeData).filter(d=>d&&d.elapsed>=12&&!d.unreliable).sort((a,b)=>b.elapsed-a.elapsed).slice(0,2);
     const changedQs=Object.values(timeData).filter(d=>d&&d.changed).slice(0,2);
     const backQs=backLog.slice(0,2);
+
+    // Phase-level breakdown: does a different type lead within a specific phase?
+    const phaseScores=[{T:0,A:0,D:0,S:0,K:0},{T:0,A:0,D:0,S:0,K:0},{T:0,A:0,D:0,S:0,K:0},{T:0,A:0,D:0,S:0,K:0}];
+    Object.values(timeData).filter(Boolean).forEach(d=>{
+      const q=Qs[d.q];
+      const phaseIdx=q.p;
+      d.sel.forEach((si,r)=>{
+        const s=q.c[si].s;
+        const w=d.sel.length===1?1.5:(r===0?1.5:r===1?1:.6);
+        for(const k in s)phaseScores[phaseIdx][k]+=s[k]*w;
+      });
+    });
+    const phaseShifts=[];
+    phaseScores.forEach((ps,idx)=>{
+      const psTotal=Object.values(ps).reduce((a,b)=>a+b,0);
+      if(psTotal<3)return; // not enough signal in this phase
+      const psSorted=Object.entries(ps).sort((a,b)=>b[1]-a[1]);
+      const psTop=psSorted[0][0];
+      const psTopPct=Math.round(ps[psTop]/psTotal*100);
+      if(psTop!==top&&psTopPct>=30){
+        phaseShifts.push({phaseIdx,type:psTop,pct:psTopPct});
+      }
+    });
+
     const distStr=sorted.map(([k])=>`${k}${Math.round(scores[k]/total*100)}`).join('/');
     const profileCode=`[PSY-PROFILE v1]\n유형:${t.name}(${t.attach}/${t.f4})\n분포:${distStr}${slowQs.length?'\n장고:'+slowQs.map(d=>`Q${d.q+1}(${d.elapsed}초)`).join(','):''}${changedQs.length?'\n변경:'+changedQs.map(d=>`Q${d.q+1}`).join(','):''}${backQs.length?'\n재방문:'+backQs.map(b=>`Q${b.from}`).join(','):''}`;
-    finalProfile={top,second,isCombo,isNear,sorted,total,t,topPct,secPct,slowQs,changedQs,backQs,profileCode,scores};
+    finalProfile={top,second,isCombo,isNear,sorted,total,t,topPct,secPct,slowQs,changedQs,backQs,profileCode,scores,phaseShifts};
 
     let extra='';
     const sq=slowQs[0],cq=changedQs[0];
@@ -742,6 +769,16 @@ function buildResult(){
       ccHtml+=`<div class="cc" id="${id}"><div class="exp-hd" onclick="toggleExp('${id}')" style="background:${cc.bg}"><div class="exp-hd-left"><div class="exp-eye" style="color:${cc.col}">${cc.sub}</div><div class="exp-title" style="color:${cc.col}">${cc.title}</div></div><div class="exp-arrow">∨</div></div><div class="exp-body" id="eb-${id}">${secsHtml}</div></div>`;
     });
 
+    let phaseShiftHtml='';
+    phaseShifts.forEach(ps=>{
+      const ph=PHASES[ps.phaseIdx];
+      const shiftType=TYPES[ps.type];
+      phaseShiftHtml+=`<div class="ai-box">
+        <div class="ai-lbl">${ph.label} 반응 유형 기반</div>
+        <div class="ai-text">전반적으로는 <strong>${t.name}</strong> 패턴이지만, "${ph.name}" 구간에서는 <strong style="color:${shiftType.col}">${shiftType.name}</strong> 패턴이 ${ps.pct}%로 가장 강하게 나타났어요. ${ph.desc||'이 시기 특유의 상황'}에서는 평소와 다른 반응이 튀어나오는 거예요.</div>
+      </div>`;
+    });
+
     document.getElementById('res-header').innerHTML=`<div class="re">${t.attach} / ${t.f4}</div><div class="rn" style="color:${t.col}">${t.name}</div><div class="ro">${t.one}</div>${comboHtml}`;
 
     document.getElementById('tb-result').innerHTML=`
@@ -776,6 +813,7 @@ function buildResult(){
       ${sigHtml?`<div class="sec-lbl">선택지 반응 상세 분석</div>${sigHtml}<div class="div"></div>`:''}
       <div class="sec-lbl">맞춤 분석</div>
       <div class="ai-box"><div class="ai-lbl">선택 패턴 + 선택지 반응 시간 기반</div><div class="ai-text">${aiText}</div></div>
+      ${phaseShiftHtml}
       ${ccHtml?`<div class="div"></div><div class="sec-lbl">심화 분석</div>${ccHtml}`:''}
       <div class="div"></div>
       <div class="sec-lbl">오늘부터 해볼 것</div>
@@ -839,7 +877,7 @@ function buildExportData(){
     changed_answer:d.changed
   }));
   return {
-    version:"v20",
+    version:"v23",
     timestamp:new Date().toISOString(),
     primary_type:fp.t.name,
     primary_type_eng:fp.t.eng,
@@ -851,6 +889,7 @@ function buildExportData(){
     slow_questions:fp.slowQs.map(d=>({q:d.q+1,seconds:d.elapsed,answer:d.choiceText})),
     changed_questions:fp.changedQs.map(d=>({q:d.q+1,final_answer:d.choiceText})),
     back_navigations:fp.backQs.map(b=>({q:b.from})),
+    phase_shifts:(fp.phaseShifts||[]).map(ps=>({phase:PHASES[ps.phaseIdx].name,shifted_type:BNAMES[ps.type],percent:ps.pct})),
     all_answers:answersDetail
   };
 }
