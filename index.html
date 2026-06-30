@@ -99,7 +99,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);min-height:1
 .div{height:.5px;background:var(--border);margin:1.5rem 0}
 .sec-lbl{font-size:10px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--text-muted);margin-bottom:10px}
 
-.exp-card{border:.5px solid var(--border);border-radius:11px;margin-bottom:8px;overflow:hidden}
+.exp-card{border:.5px solid var(--border);border-radius:11px;margin-bottom:8px;overflow:hidden;background:#FFFFFF}
 .exp-hd{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;cursor:pointer;background:#FFFFFF;user-select:none;gap:12px}
 .exp-hd:hover{background:var(--surface2)}
 .exp-hd-left{flex:1;min-width:0}
@@ -161,7 +161,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);min-height:1
 .bar-track{height:4px;background:var(--border);border-radius:2px;overflow:hidden}
 .bar-fill{height:100%;border-radius:2px;transition:width .8s ease}
 
-.ai-box{background:var(--surface);border-radius:12px;padding:1.25rem;margin-bottom:8px}
+.ai-box{background:#FFFFFF;border:.5px solid var(--border);border-radius:12px;padding:1.25rem;margin-bottom:8px}
 .ai-lbl{font-size:10px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--text-muted);margin-bottom:10px}
 .ai-text{font-size:14px;color:var(--text);line-height:1.85}
 .action-box{border:.5px solid var(--border);border-radius:11px;padding:1.25rem;margin-bottom:8px}
@@ -478,6 +478,7 @@ const Qs=[
 
 const TYPES={
   T:{name:"트로피 수집가",eng:"Trophy Collector",one:"상대가 아니라 '나를 좋아한다는 사실'이 필요한 유형이에요.",
+    hint:"상대에게 잘 보이고 싶고, 그 사람이 나를 좋아한다는 확신을 얻고 싶은 마음이 슬쩍 드러나요.",
     attach:"불안-몰두형",attachEng:"Anxious-Preoccupied",f4:"Fight + Fawn",fear:"매력 상실, 무가치감",
     attachDesc:"버려질 것에 대한 공포가 크고, 상대방의 사랑을 끊임없이 확인하려는 유형이에요. 관계에 과몰입하고, 상대의 작은 반응 변화에도 크게 흔들려요.",
     attachConnect:"일반적인 불안-몰두형은 상대와 하나가 되고 싶어 매달리지만, 트로피 수집가는 다른 방향으로 발현돼요. 상대 자체보다 '나를 좋아한다는 사실'을 잃지 않으려는 거예요.",
@@ -492,6 +493,7 @@ const TYPES={
     a3:`애매한 빈칸 — 아직 정의되지 않은 관계, 답이 없는 상태 — 을 견디는 연습을 해봐요. 그 빈칸을 최악의 상상으로 채우지 않고 그냥 비워두는 것부터 시작해봐요.`,
     cards:["control","painlove"]},
   A:{name:"불안의 파수꾼",eng:"Anxious Sentinel",one:"상대의 반응 하나하나가 생존 신호처럼 느껴지는 유형이에요.",
+    hint:"버려질 것에 대한 공포나, 상대방의 사랑을 계속 확인하고 싶은 마음이 슬쩍 드러나요.",
     attach:"불안-몰두형",attachEng:"Anxious-Preoccupied",f4:"Fawn",fear:"버려짐, 거절",
     attachDesc:"버려질 것에 대한 공포가 크고, 상대방의 사랑을 끊임없이 확인하려는 유형이에요.",
     attachConnect:"24시간 상대의 반응을 스캔하면서, 조금이라도 이상한 신호가 오면 모든 에너지를 쏟아 확인하려 해요.",
@@ -506,6 +508,7 @@ const TYPES={
     a3:`결과가 안 나온 상태, 답이 없는 빈칸을 마주할 때 — 그걸 즉시 채우려 하지 말고 5분만 그 모르는 상태로 머물러봐요.`,
     cards:["ambiguity","painlove"]},
   D:{name:"유리벽 뒤의 관찰자",eng:"Glass Wall Observer",one:"가까워질수록 거리를 두는, 친밀함이 두려운 유형이에요.",
+    hint:"가까워지는 게 불편해서, 먼저 거리를 두고 싶은 마음이 슬쩍 드러나요.",
     attach:"공포-회피형",attachEng:"Fearful-Avoidant",f4:"Flight",fear:"친밀감, 자율성 상실",
     attachDesc:"사랑받고 싶은 열망은 있지만 막상 상대가 가까워지면 본능적으로 밀어내요.",
     attachConnect:"회피처럼 보이지만 사실은 상처받지 않기 위해 먼저 신경을 끄는 거예요. 무감각이 아니라 방어예요.",
@@ -520,6 +523,7 @@ const TYPES={
     a3:`관계가 정의되지 않은 애매한 상태가 편하게 느껴진다면, 그게 진짜 편한 건지 도망칠 구멍을 만들어둔 건지 스스로에게 물어봐요.`,
     cards:["engulfment","ambiguity"]},
   K:{name:"천 개의 얼굴을 가진 거울",eng:"The Chameleon Mirror",one:"자기 자신을 지워가며 상대에게 맞추는 유형이에요.",
+    hint:"거절당하지 않으려고 내 모습을 숨기고 상대에게 맞추고 싶은 마음이 슬쩍 드러나요.",
     attach:"공포-회피형",attachEng:"Fearful-Avoidant",f4:"Fawn (극단형)",fear:"진짜 자신으로 거절당함",
     attachDesc:"진짜 내 모습을 보여줬다가 거절당할 것에 대한 공포가 너무 커요.",
     attachConnect:"Fawn의 극단적인 형태예요. 취향과 성격과 외모까지 통째로 개조해요.",
@@ -534,6 +538,7 @@ const TYPES={
     a3:`관계가 애매하게 남아있는 게 불안할 때, 억지로 라벨을 붙이거나 결론을 만들지 말고 그 비어있음을 그대로 둬봐요.`,
     cards:["ambiguity"]},
   S:{name:"뿌리 깊은 나무",eng:"The Rooted One",one:"흔들리면서도 중심을 잃지 않는 유형이에요.",
+    hint:"감정을 솔직하게 말하고, 흔들려도 다시 중심을 잡으려는 모습이 슬쩍 드러나요.",
     attach:"안정형",attachEng:"Secure Attachment",f4:"통합 — 자기인식",fear:"없음 (강점: 경계 인식)",
     attachDesc:"자신의 감정과 경계를 꽤 잘 알고 있어요. 상대의 반응에 과하게 흔들리지 않고, 솔직하게 소통하는 편이에요.",
     attachConnect:"완벽하게 안정적인 사람은 없어요. 흔들리는 순간에도 그게 흔들림인 걸 아는 것, 그게 이미 강점이에요.",
@@ -695,29 +700,23 @@ function buildResult(){
     const topPct=Math.round(scores[top]/total*100),secPct=Math.round(scores[second]/total*100);
     const isCombo=topPct-secPct<15,isNear=topPct-secPct<7;
     const slowQs=Object.values(timeData).filter(d=>d&&d.elapsed>=12&&!d.unreliable).sort((a,b)=>b.elapsed-a.elapsed).slice(0,2);
-    const changedQs=Object.values(timeData).filter(d=>d&&d.changed).slice(0,2);
+    const changedQs=Object.values(timeData).filter(d=>d&&d.changed&&d.elapsed>=4&&!d.unreliable).slice(0,2);
     const backQs=backLog.slice(0,2);
 
-    // Phase-level breakdown: does a different type lead within a specific phase?
-    const phaseScores=[{T:0,A:0,D:0,S:0,K:0},{T:0,A:0,D:0,S:0,K:0},{T:0,A:0,D:0,S:0,K:0},{T:0,A:0,D:0,S:0,K:0}];
+    // Question-level deviation: for each question where the user's TOP choice (rank 0)
+    // scores primarily toward a type other than their overall top type, flag it.
+    // Group by phase so multiple deviations within the same phase can each surface.
+    const phaseShifts=[];
     Object.values(timeData).filter(Boolean).forEach(d=>{
       const q=Qs[d.q];
-      const phaseIdx=q.p;
-      d.sel.forEach((si,r)=>{
-        const s=q.c[si].s;
-        const w=d.sel.length===1?1.5:(r===0?1.5:r===1?1:.6);
-        for(const k in s)phaseScores[phaseIdx][k]+=s[k]*w;
-      });
-    });
-    const phaseShifts=[];
-    phaseScores.forEach((ps,idx)=>{
-      const psTotal=Object.values(ps).reduce((a,b)=>a+b,0);
-      if(psTotal<3)return; // not enough signal in this phase
-      const psSorted=Object.entries(ps).sort((a,b)=>b[1]-a[1]);
-      const psTop=psSorted[0][0];
-      const psTopPct=Math.round(ps[psTop]/psTotal*100);
-      if(psTop!==top&&psTopPct>=30){
-        phaseShifts.push({phaseIdx,type:psTop,pct:psTopPct});
+      const firstSi=d.sel[0];
+      const choiceScores=q.c[firstSi].s;
+      // find which type this specific choice scores highest for
+      const choiceSorted=Object.entries(choiceScores).sort((a,b)=>b[1]-a[1]);
+      if(!choiceSorted.length)return;
+      const choiceType=choiceSorted[0][0];
+      if(choiceType!==top){
+        phaseShifts.push({phaseIdx:q.p,type:choiceType,qNum:d.q+1,answer:d.choiceText});
       }
     });
 
@@ -745,7 +744,7 @@ function buildResult(){
     });
     changedQs.forEach(d=>{
       if(slowQs.find(s=>s.q===d.q))return;
-      sigHtml+=`<div class="sig-item"><div class="sig-top"><span class="sig-badge changed">Q${d.q+1} — 선택 변경</span></div><div class="sig-q">${Qs[d.q].t}</div><div class="sig-ans">최종 선택: "${d.choiceText}"</div><div class="sig-m changed">처음 고른 게 진짜 본능이에요. 알고는 있지만 인정하기 싫었던 거예요.</div></div>`;
+      sigHtml+=`<div class="sig-item"><div class="sig-top"><span class="sig-badge changed">Q${d.q+1} — 고민 끝에 선택 변경 (${d.elapsed}초)</span></div><div class="sig-q">${Qs[d.q].t}</div><div class="sig-ans">최종 선택: "${d.choiceText}"</div><div class="sig-m changed">단순 실수가 아니라 시간을 들여 고민하다 바꾼 선택이에요. 처음 고른 게 진짜 본능이고, 알고는 있지만 인정하기 싫었던 걸 수 있어요.</div></div>`;
     });
     backQs.forEach(b=>{
       const qIdx=b.from-1;
@@ -770,12 +769,22 @@ function buildResult(){
     });
 
     let phaseShiftHtml='';
+    // group by phaseIdx, find the most frequent deviating type within each phase
+    const byPhase={};
     phaseShifts.forEach(ps=>{
-      const ph=PHASES[ps.phaseIdx];
-      const shiftType=TYPES[ps.type];
+      if(!byPhase[ps.phaseIdx])byPhase[ps.phaseIdx]={};
+      byPhase[ps.phaseIdx][ps.type]=(byPhase[ps.phaseIdx][ps.type]||0)+1;
+    });
+    Object.keys(byPhase).forEach(phaseIdxStr=>{
+      const phaseIdx=Number(phaseIdxStr);
+      const ph=PHASES[phaseIdx];
+      const typeCounts=byPhase[phaseIdx];
+      const dominantType=Object.entries(typeCounts).sort((a,b)=>b[1]-a[1])[0][0];
+      const shiftType=TYPES[dominantType];
+      const phaseDesc=ph.desc?ph.desc.replace(/\.$/,'') : ph.name;
       phaseShiftHtml+=`<div class="ai-box">
         <div class="ai-lbl">${ph.label} 반응 유형 기반</div>
-        <div class="ai-text">전반적으로는 <strong>${t.name}</strong> 패턴이지만, "${ph.name}" 구간에서는 <strong style="color:${shiftType.col}">${shiftType.name}</strong> 패턴이 ${ps.pct}%로 가장 강하게 나타났어요. ${ph.desc||'이 시기 특유의 상황'}에서는 평소와 다른 반응이 튀어나오는 거예요.</div>
+        <div class="ai-text">${phaseDesc} — 이 순간엔 평소와 조금 다른 모습이 나와요. <strong style="color:${shiftType.col}">${shiftType.name}</strong> 패턴처럼, ${shiftType.hint}</div>
       </div>`;
     });
 
@@ -877,7 +886,7 @@ function buildExportData(){
     changed_answer:d.changed
   }));
   return {
-    version:"v23",
+    version:"v26",
     timestamp:new Date().toISOString(),
     primary_type:fp.t.name,
     primary_type_eng:fp.t.eng,
@@ -889,7 +898,7 @@ function buildExportData(){
     slow_questions:fp.slowQs.map(d=>({q:d.q+1,seconds:d.elapsed,answer:d.choiceText})),
     changed_questions:fp.changedQs.map(d=>({q:d.q+1,final_answer:d.choiceText})),
     back_navigations:fp.backQs.map(b=>({q:b.from})),
-    phase_shifts:(fp.phaseShifts||[]).map(ps=>({phase:PHASES[ps.phaseIdx].name,shifted_type:BNAMES[ps.type],percent:ps.pct})),
+    phase_shifts:(fp.phaseShifts||[]).map(ps=>({phase:PHASES[ps.phaseIdx].name,question_num:ps.qNum,answer:ps.answer,deviated_type:BNAMES[ps.type]})),
     all_answers:answersDetail
   };
 }
