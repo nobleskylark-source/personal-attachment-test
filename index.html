@@ -32,6 +32,10 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);min-height:1
 .mc-t{font-size:13px;font-weight:500;color:var(--text);margin-bottom:3px}
 .mc-d{font-size:11px;color:var(--text-muted);line-height:1.5}
 .phase-list{margin-bottom:1.75rem}
+.who-box{padding:14px 15px;background:var(--accent-bg);border:1px solid var(--accent-border);border-radius:10px;margin-bottom:1.75rem}
+.who-lbl{font-size:12px;font-weight:600;color:var(--accent);margin-bottom:6px}
+.who-txt{font-size:12px;color:var(--text-sec);line-height:1.65}
+.who-txt strong{color:var(--text);font-weight:600}
 .plist-title{font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--text-muted);margin-bottom:10px}
 .pl-item{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:.5px solid var(--border)}
 .pl-item:last-child{border-bottom:none}
@@ -47,6 +51,10 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);min-height:1
 .pc-bar{width:60px;height:3px;border-radius:2px;margin:0 auto 1.5rem}
 .pc-eye{font-size:11px;letter-spacing:.1em;text-transform:uppercase;margin-bottom:1rem}
 .pc-name{font-size:22px;font-weight:600;margin-bottom:1rem}
+.pc-steps{display:flex;gap:5px;margin-bottom:1rem}
+.pc-step{width:22px;height:3px;border-radius:2px;background:var(--border)}
+.pc-step.done{background:var(--text-muted)}
+.pc-step.active{background:var(--text)}
 .pc-desc{font-size:15px;color:var(--text-sec);line-height:1.75;margin-bottom:2.5rem;max-width:320px}
 .pc-btn{padding:12px 32px;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer;background:var(--text);color:var(--bg);border:none;transition:opacity .15s}
 .pc-btn:hover{opacity:.88}
@@ -221,6 +229,10 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);min-height:1
       <div class="pl-item"><div class="pl-dot" style="background:#1E5FA0"></div><span class="pl-phase">Phase 2</span><span class="pl-name">썸</span></div>
       <div class="pl-item"><div class="pl-dot" style="background:#3D2994"></div><span class="pl-phase">Phase 3</span><span class="pl-name">고백 전후</span></div>
     </div>
+    <div class="who-box">
+      <div class="who-lbl">'상대'는 누구를 떠올리면 되나요?</div>
+      <div class="who-txt">이상형이나 외모 조건이 아니에요. <strong>실제로 연인이 될 가능성이 있다고 느낀 사람</strong> — 그 한 사람을 처음부터 끝까지(Phase 0~3) 계속 떠올리며 답해주세요. 지금 그런 사람이 없다면, 최근에 가장 가까웠던 사람을 떠올려도 좋아요.</div>
+    </div>
     <button class="sbtn" onclick="startQuiz()">분석 시작하기 →</button>
     <div class="foot-note">약 7~10분 소요 · 결과는 즉시 확인할 수 있어요</div>
   </div>
@@ -230,6 +242,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);min-height:1
   <div class="phase-card">
     <div class="pc-bar" id="pc-bar"></div>
     <div class="pc-eye" id="pc-eye"></div>
+    <div class="pc-steps" id="pc-steps"></div>
     <div class="pc-name" id="pc-name"></div>
     <div class="pc-desc" id="pc-desc"></div>
     <button class="pc-btn" onclick="continueQuiz()">계속하기 →</button>
@@ -277,7 +290,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);min-height:1
 
 <script>
 const PHASES=[
-  {label:"Phase 0",name:"상대가 먼저 다가올 때",col:"#98AAB0",desc:null},
+  {label:"Phase 0",name:"상대가 먼저 다가올 때",col:"#98AAB0",desc:"누군가 나에게 호감을 보이기 시작하는 순간부터예요. 이후 마음이 생기고(P1), 썸을 타고(P2), 고백을 주고받는 순간(P3)까지 — 같은 한 사람을 처음부터 끝까지 떠올리며 답해주세요. (이상형이 아니라, 실제로 연인이 될 수 있었던 사람 기준이에요)"},
   {label:"Phase 1",name:"마음이 생길 때",col:"#319DB5",desc:"그 사람이 조금씩 신경 쓰이기 시작해요."},
   {label:"Phase 2",name:"썸",col:"#1E5FA0",desc:"이름 없는 관계 — 그 애매함 속에서 나는 어떻게 반응하나요."},
   {label:"Phase 3",name:"고백 전후",col:"#3D2994",desc:"관계가 정의되려는 순간이에요."},
@@ -609,7 +622,7 @@ document.addEventListener('visibilitychange',()=>{
 });
 
 function show(id){document.querySelectorAll('.scr').forEach(s=>s.classList.remove('on'));document.getElementById(id).classList.add('on');}
-function startQuiz(){show('s-quiz');renderQ();}
+function startQuiz(){showPhaseCard(0);}
 
 function showPhaseCard(idx){
   const ph=PHASES[idx];
@@ -618,6 +631,14 @@ function showPhaseCard(idx){
   document.getElementById('pc-eye').style.color=ph.col;
   document.getElementById('pc-name').textContent=ph.name;
   document.getElementById('pc-desc').textContent=ph.desc||'';
+  const stepsEl=document.getElementById('pc-steps');
+  stepsEl.innerHTML='';
+  PHASES.forEach((p,i)=>{
+    const d=document.createElement('div');
+    d.className='pc-step'+(i<idx?' done':i===idx?' active':'');
+    d.style.background=i<=idx?p.col:'var(--border)';
+    stepsEl.appendChild(d);
+  });
   show('s-phase');
 }
 function continueQuiz(){show('s-quiz');renderQ();}
@@ -637,8 +658,14 @@ function shuffleWithSeed(arr,seed){
 function renderQ(){
   const q=Qs[cur];
   const pct=Math.round(cur/Qs.length*100);
-  document.getElementById('prog').style.width=pct+'%';
-  document.getElementById('prog').style.background=PHASES[q.p].col;
+  const progEl=document.getElementById('prog');
+  // Build a 4-segment gradient (one color per phase, each phase = 25% of the bar)
+  const c0=PHASES[0].col,c1=PHASES[1].col,c2=PHASES[2].col,c3=PHASES[3].col;
+  const gradient=`linear-gradient(to right, ${c0} 0%, ${c0} 25%, ${c1} 25%, ${c1} 50%, ${c2} 50%, ${c2} 75%, ${c3} 75%, ${c3} 100%)`;
+  progEl.style.backgroundImage=gradient;
+  progEl.style.backgroundSize=(pct>0?(10000/pct):10000)+'% 100%';
+  progEl.style.backgroundColor='';
+  progEl.style.width=pct+'%';
   const ph=PHASES[q.p];
   document.getElementById('pbanner').style.background=ph.col+'18';
   document.getElementById('pbdot').style.background=ph.col;
@@ -659,6 +686,15 @@ function renderQ(){
   // Draw phase segment markers on progress bar
   const segsEl=document.getElementById('prog-segs');
   segsEl.innerHTML='';
+  // P0 label at the very start
+  const lbl0=document.createElement('div');
+  lbl0.className='prog-seg-label';
+  lbl0.style.left='0%';
+  lbl0.style.transform='translateX(0)';
+  lbl0.style.color=PHASES[0].col;
+  lbl0.style.opacity='1';
+  lbl0.textContent='P0';
+  segsEl.appendChild(lbl0);
   // Segment dividers at 25%, 50%, 75%
   [25,50,75].forEach((p,i)=>{
     const phIdx=i+1;
