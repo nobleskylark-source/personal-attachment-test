@@ -53,8 +53,11 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);min-height:1
 
 /* QUIZ */
 .quiz-top{padding-top:1.75rem}
-.prog-w{height:2px;background:var(--border);border-radius:2px;margin-bottom:1.5rem}
-.prog-f{height:100%;border-radius:2px;transition:width .4s ease}
+.prog-w{height:6px;background:var(--border);border-radius:3px;margin-bottom:2.2rem;position:relative;overflow:visible}
+.prog-f{height:100%;border-radius:3px;transition:width .4s ease}
+.prog-segs{position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none}
+.prog-seg-mark{position:absolute;top:-3px;width:2px;height:12px;background:var(--bg);border-radius:1px;transform:translateX(-50%)}
+.prog-seg-label{position:absolute;top:10px;font-size:9px;font-weight:600;letter-spacing:.04em;transform:translateX(-50%);white-space:nowrap;color:var(--text-muted);opacity:.7}
 .phase-banner{padding:8px 12px;border-radius:8px;margin-bottom:1rem;display:flex;align-items:center;gap:8px}
 .pb-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
 .pb-label{font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase}
@@ -213,10 +216,10 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);min-height:1
     </div>
     <div class="phase-list">
       <div class="plist-title">분석 구간</div>
-      <div class="pl-item"><div class="pl-dot" style="background:#9E9B94"></div><span class="pl-phase">Phase 0</span><span class="pl-name">상대가 먼저 다가올 때</span></div>
+      <div class="pl-item"><div class="pl-dot" style="background:#B0A898"></div><span class="pl-phase">Phase 0</span><span class="pl-name">상대가 먼저 다가올 때</span></div>
       <div class="pl-item"><div class="pl-dot" style="background:#C4571A"></div><span class="pl-phase">Phase 1</span><span class="pl-name">마음이 생길 때</span></div>
-      <div class="pl-item"><div class="pl-dot" style="background:#3878B8"></div><span class="pl-phase">Phase 2</span><span class="pl-name">썸</span></div>
-      <div class="pl-item"><div class="pl-dot" style="background:#6B5FC4"></div><span class="pl-phase">Phase 3</span><span class="pl-name">고백 전후</span></div>
+      <div class="pl-item"><div class="pl-dot" style="background:#1E5FA0"></div><span class="pl-phase">Phase 2</span><span class="pl-name">썸</span></div>
+      <div class="pl-item"><div class="pl-dot" style="background:#3D2994"></div><span class="pl-phase">Phase 3</span><span class="pl-name">고백 전후</span></div>
     </div>
     <button class="sbtn" onclick="startQuiz()">분석 시작하기 →</button>
     <div class="foot-note">약 7~10분 소요 · 결과는 즉시 확인할 수 있어요</div>
@@ -235,7 +238,10 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);min-height:1
 
 <div id="s-quiz" class="scr">
   <div class="quiz-top">
-    <div class="prog-w"><div class="prog-f" id="prog" style="width:0%"></div></div>
+    <div class="prog-w">
+      <div class="prog-f" id="prog" style="width:0%"></div>
+      <div class="prog-segs" id="prog-segs"></div>
+    </div>
     <div class="phase-banner" id="pbanner"><div class="pb-dot" id="pbdot"></div><span class="pb-label" id="pblabel"></span><span class="pb-name" id="pbname"></span></div>
     <div class="q-num" id="qnum"></div>
     <div class="qt" id="qtxt"></div>
@@ -271,10 +277,10 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);min-height:1
 
 <script>
 const PHASES=[
-  {label:"Phase 0",name:"상대가 먼저 다가올 때",col:"#9E9B94",desc:null},
+  {label:"Phase 0",name:"상대가 먼저 다가올 때",col:"#B0A898",desc:null},
   {label:"Phase 1",name:"마음이 생길 때",col:"#C4571A",desc:"그 사람이 조금씩 신경 쓰이기 시작해요."},
-  {label:"Phase 2",name:"썸",col:"#3878B8",desc:"이름 없는 관계 — 그 애매함 속에서 나는 어떻게 반응하나요."},
-  {label:"Phase 3",name:"고백 전후",col:"#6B5FC4",desc:"관계가 정의되려는 순간이에요."},
+  {label:"Phase 2",name:"썸",col:"#1E5FA0",desc:"이름 없는 관계 — 그 애매함 속에서 나는 어떻게 반응하나요."},
+  {label:"Phase 3",name:"고백 전후",col:"#3D2994",desc:"관계가 정의되려는 순간이에요."},
 ];
 
 const Qs=[
@@ -501,7 +507,7 @@ const TYPES={
     f4desc:"상대에게 맞춰서 위협(버려짐)을 없애려는 반응이에요.",
     fearDesc:"가장 두려운 건 상대가 나를 두고 떠나는 것이에요.",
     cycle:"확인해도 금방 또 불안해져요 → 더 자주 확인하려 해요 → 상대가 숨이 막혀요 → 거리를 두려 해요 → 불안이 폭발해요.",
-    col:"#3878B8",bg:"#EAF1FB",
+    col:"#1E5FA0",bg:"#EAF1FB",
     an:`상대의 침묵 하나, 답장 속도 하나가 생존 신호처럼 읽혀요. 불안이 레이더가 돼서 24시간 상대를 스캔하고 있는 거예요. 정작 지치는 건 상대가 아니라 그 레이더를 돌리고 있는 자신이에요.`,
     a1:`연락이 없을 때 핸드폰을 확인하기 전에, 3분 동안 그 불안을 그냥 느껴봐요. 불안은 파도예요. 가만히 있으면 정점을 찍고 가라앉아요.`,
     a2:`상대의 반응이 늦을 때 '나 때문인가' 대신 '이 사람도 자기 삶이 있구나'로 해석을 바꿔보는 연습을 해봐요.`,
@@ -554,7 +560,7 @@ const TYPES={
 };
 
 const BNAMES={T:"트로피 수집가",A:"불안의 파수꾼",D:"유리벽 뒤의 관찰자",K:"천 개의 얼굴",S:"뿌리 깊은 나무"};
-const BCOLS={T:"#C4571A",A:"#3878B8",D:"#1D9E75",K:"#A84878",S:"#4A7C20"};
+const BCOLS={T:"#C4571A",A:"#1E5FA0",D:"#1D9E75",K:"#A84878",S:"#4A7C20"};
 const F4_ALL=[
   {key:"Fight",desc:"통제하고 주도권을 쥐려는 반응. 상대를 조종하거나 관계의 우위를 점하려 해요."},
   {key:"Flight",desc:"멀어지고 회피하려는 반응. 상처받기 전에 먼저 사라져요."},
@@ -616,9 +622,22 @@ function showPhaseCard(idx){
 }
 function continueQuiz(){show('s-quiz');renderQ();}
 
+// Seeded shuffle — same question always shows same order (reproducible across back-nav)
+function shuffleWithSeed(arr,seed){
+  const a=[...arr];
+  let s=seed+42;
+  for(let i=a.length-1;i>0;i--){
+    s=(s*1664525+1013904223)&0xffffffff;
+    const j=Math.abs(s)%(i+1);
+    [a[i],a[j]]=[a[j],a[i]];
+  }
+  return a;
+}
+
 function renderQ(){
   const q=Qs[cur];
-  document.getElementById('prog').style.width=Math.round(cur/Qs.length*100)+'%';
+  const pct=Math.round(cur/Qs.length*100);
+  document.getElementById('prog').style.width=pct+'%';
   document.getElementById('prog').style.background=PHASES[q.p].col;
   const ph=PHASES[q.p];
   document.getElementById('pbanner').style.background=ph.col+'18';
@@ -629,19 +648,54 @@ function renderQ(){
   document.getElementById('pbname').style.color=ph.col+'99';
   document.getElementById('qnum').textContent='Q'+(cur+1);
   document.getElementById('qtxt').textContent=q.t;
-  document.getElementById('qmeta').textContent=(cur+1)+' / '+Qs.length;
+
+  // Phase boundaries: Q0-6=P0(7), Q7-13=P1(7), Q14-20=P2(7), Q21-27=P3(7)
+  const phaseBounds=[{start:0,end:6,idx:0},{start:7,end:13,idx:1},{start:14,end:20,idx:2},{start:21,end:27,idx:3}];
+  const curBound=phaseBounds.find(b=>cur>=b.start&&cur<=b.end);
+  const phaseQ=curBound?cur-curBound.start:0;
+  const phaseTotal=7;
+  document.getElementById('qmeta').textContent=(phaseQ+1)+' / '+phaseTotal+' · Q'+(cur+1)+' / '+Qs.length;
+
+  // Draw phase segment markers on progress bar
+  const segsEl=document.getElementById('prog-segs');
+  segsEl.innerHTML='';
+  // Segment dividers at 25%, 50%, 75%
+  [25,50,75].forEach((p,i)=>{
+    const phIdx=i+1;
+    const mark=document.createElement('div');
+    mark.className='prog-seg-mark';
+    mark.style.left=p+'%';
+    const isActive=pct>=p;
+    mark.style.opacity=isActive?'1':'.4';
+    segsEl.appendChild(mark);
+    const lbl=document.createElement('div');
+    lbl.className='prog-seg-label';
+    lbl.style.left=p+'%';
+    lbl.style.color=PHASES[phIdx].col;
+    lbl.style.opacity=isActive?'1':'.5';
+    lbl.textContent='P'+phIdx;
+    segsEl.appendChild(lbl);
+  });
+
   selections=savedAnswers[cur]?[...savedAnswers[cur]]:[];
   changeCnt=0;qStart=Date.now();hiddenAccum=0;hiddenSince=document.hidden?Date.now():null;
   document.getElementById('nxt').disabled=selections.length===0;
   document.getElementById('prev-btn').disabled=cur===0;
+
+  // Shuffle choices per question (stable per question using question index as seed)
+  const choiceIndices=shuffleWithSeed(q.c.map((_,i)=>i),cur);
+
   const c=document.getElementById('choices');c.innerHTML='';
-  q.c.forEach((ch,i)=>{
+  choiceIndices.forEach((origIdx)=>{
+    const ch=q.c[origIdx];
     const btn=document.createElement('div');
-    btn.className='ch'+(selections.includes(i)?' on':'');
-    btn.innerHTML=`<div class="rk" id="rk${i}">${selections.includes(i)?selections.indexOf(i)+1:'-'}</div><div class="ct">${ch.txt}</div>`;
-    btn.onclick=()=>toggleChoice(i,btn);
+    btn.className='ch'+(selections.includes(origIdx)?' on':'');
+    btn.innerHTML=`<div class="rk" id="rk${origIdx}">${selections.includes(origIdx)?selections.indexOf(origIdx)+1:'-'}</div><div class="ct">${ch.txt}</div>`;
+    btn.onclick=()=>toggleChoice(origIdx,btn);
     c.appendChild(btn);
   });
+  // Update rk labels
+  selections.forEach((si,r)=>{const rk=document.getElementById('rk'+si);if(rk)rk.textContent=r+1;});
 }
 
 function toggleChoice(i,el){
@@ -650,7 +704,7 @@ function toggleChoice(i,el){
   else{selections.push(i);el.classList.add('on');}
   changeCnt++;
   document.querySelectorAll('.rk').forEach(r=>r.textContent='-');
-  selections.forEach((si,r)=>{document.querySelectorAll('.ch')[si].querySelector('.rk').textContent=r+1;});
+  selections.forEach((si,r)=>{const rk=document.getElementById('rk'+si);if(rk)rk.textContent=r+1;});
   document.getElementById('nxt').disabled=selections.length===0;
 }
 
