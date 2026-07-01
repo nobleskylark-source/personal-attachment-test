@@ -106,6 +106,10 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);min-height:1
 .rn{font-size:28px;font-weight:600;line-height:1.2;margin-bottom:6px;letter-spacing:-0.02em}
 .ro{font-size:14px;color:var(--text-sec);line-height:1.7;margin-bottom:1.25rem}
 .combo{font-size:13px;color:var(--text-sec);line-height:1.65;padding:10px 14px;background:var(--surface);border-radius:9px;margin-bottom:1.25rem;border-left:2px solid var(--accent-border)}
+.reframe-box{padding:1.5rem 1.35rem;border-radius:14px;margin-bottom:1.5rem;position:relative;overflow:hidden}
+.reframe-eye{font-size:10px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;margin-bottom:8px;opacity:.85}
+.reframe-title{font-size:19px;font-weight:700;line-height:1.4;margin-bottom:10px;letter-spacing:-0.01em}
+.reframe-body{font-size:14.5px;line-height:1.85}
 .combo-near{font-size:13px;color:var(--text-sec);line-height:1.65;padding:10px 14px;background:var(--accent-bg);border-radius:9px;margin-bottom:1.25rem;border-left:2px solid var(--accent-border)}
 .div{height:.5px;background:var(--border);margin:1.5rem 0}
 .sec-lbl{font-size:10px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--text-muted);margin-bottom:10px}
@@ -498,7 +502,7 @@ const Qs=[
 const TYPES={
   T:{name:"트로피 수집가",eng:"Trophy Collector",one:"상대가 아니라 '나를 좋아한다는 사실'이 필요한 유형이에요.",
     hint:"상대에게 잘 보이고 싶고, 그 사람이 나를 좋아한다는 확신을 얻고 싶은 마음이 슬쩍 드러나요.",
-    attach:"불안-몰두형",attachEng:"Anxious-Preoccupied",f4:"Fight + Fawn",fear:"매력 상실, 무가치감",
+    attach:"불안-몰두형",attachEng:"Anxious-Preoccupied",attachQual:"끊임없이 확인받고 싶은",attachBase:"불안형",f4:"Fight + Fawn",f4Plain:"밀당하며 나를 맞추기",fear:"매력 상실, 무가치감",fearHint:"인정이 사라지는 순간",
     attachDesc:"버려질 것에 대한 공포가 크고, 상대방의 사랑을 끊임없이 확인하려는 유형이에요. 관계에 과몰입하고, 상대의 작은 반응 변화에도 크게 흔들려요.",
     attachConnect:"일반적인 불안-몰두형은 상대와 하나가 되고 싶어 매달리지만, 트로피 수집가는 다른 방향으로 발현돼요. 상대 자체보다 '나를 좋아한다는 사실'을 잃지 않으려는 거예요.",
     f4mine:["Fight","Fawn"],
@@ -510,10 +514,12 @@ const TYPES={
     a1:`다음에 누군가에게 관심을 보일 때, 딱 한 번만 물어봐요. 이 사람이 좋아서인가, 아니면 이 사람이 나를 좋아하는 게 좋아서인가.`,
     a2:`상대의 반응이 줄어들었다고 느낄 때, 확인하려는 충동이 올라오면 15분만 기다려봐요.`,
     a3:`애매한 빈칸 — 아직 정의되지 않은 관계, 답이 없는 상태 — 을 견디는 연습을 해봐요. 그 빈칸을 최악의 상상으로 채우지 않고 그냥 비워두는 것부터 시작해봐요.`,
-    cards:["control","painlove"]},
-  A:{name:"불안의 파수꾼",eng:"Anxious Sentinel",one:"상대의 반응 하나하나가 생존 신호처럼 느껴지는 유형이에요.",
+    cards:["control","painlove"],
+    reframeTitle:"그건 사랑이 아니라, 자존감 확인이었어요",
+    reframe:"떠날까봐 초조했던 그 감정 — 사실 상대를 잃는 두려움이 아니라 '내가 여전히 매력 있다는 증거'를 잃는 두려움이었을 거예요. 그러니 상대 마음이 식었다고 자존심이 상했다면, 그건 사랑이 흔들린 게 아니라 자존감이 흔들린 거예요. 진짜 사랑은 상대가 나를 좋아하는지 확인하는 게 아니라, 있는 그대로의 서로를 마주하는 거예요. 당신이 그렇게까지 확인받으려 애쓸 필요는 없었어요."},
+  A:{name:"잠들지 못하는 밤",eng:"Anxious Sentinel",one:"상대의 반응 하나하나가 생존 신호처럼 느껴지는 유형이에요.",
     hint:"버려질 것에 대한 공포나, 상대방의 사랑을 계속 확인하고 싶은 마음이 슬쩍 드러나요.",
-    attach:"불안-몰두형",attachEng:"Anxious-Preoccupied",f4:"Fawn",fear:"버려짐, 거절",
+    attach:"불안-몰두형",attachEng:"Anxious-Preoccupied",attachQual:"한 순간도 놓지 못하는",attachBase:"불안형",f4:"Fawn",f4Plain:"거절이 두려워 맞춰주기",fear:"버려짐, 거절",fearHint:"혼자 남겨지는 순간",
     attachDesc:"버려질 것에 대한 공포가 크고, 상대방의 사랑을 끊임없이 확인하려는 유형이에요.",
     attachConnect:"24시간 상대의 반응을 스캔하면서, 조금이라도 이상한 신호가 오면 모든 에너지를 쏟아 확인하려 해요.",
     f4mine:["Fawn"],
@@ -525,25 +531,29 @@ const TYPES={
     a1:`연락이 없을 때 핸드폰을 확인하기 전에, 3분 동안 그 불안을 그냥 느껴봐요. 불안은 파도예요. 가만히 있으면 정점을 찍고 가라앉아요.`,
     a2:`상대의 반응이 늦을 때 '나 때문인가' 대신 '이 사람도 자기 삶이 있구나'로 해석을 바꿔보는 연습을 해봐요.`,
     a3:`결과가 안 나온 상태, 답이 없는 빈칸을 마주할 때 — 그걸 즉시 채우려 하지 말고 5분만 그 모르는 상태로 머물러봐요.`,
-    cards:["ambiguity","painlove"]},
-  D:{name:"유리벽 뒤의 관찰자",eng:"Glass Wall Observer",one:"가까워질수록 거리를 두는, 친밀함이 두려운 유형이에요.",
+    cards:["ambiguity","painlove"],
+    reframeTitle:"그건 사랑이 아니라, 생존 반응이었어요",
+    reframe:"연락이 조금만 늦어도 밀려왔던 불안 — 그건 사랑이 커서가 아니었어요. 뇌가 상대의 침묵을 '버려짐의 신호'로 착각한 거예요. 안정된 사랑은 심장을 조이지 않아요. 오히려 편안하게 가라앉혀줘요. 그러니 그렇게까지 불안해할 필요는 없었어요. 그건 사랑의 크기가 아니라, 불안의 크기였을 뿐이에요."},
+  D:{name:"닿기 전에 멈춘 발끝",eng:"Glass Wall Observer",one:"가까워질수록 거리를 두는, 친밀함이 두려운 유형이에요.",
     hint:"가까워지는 게 불편해서, 먼저 거리를 두고 싶은 마음이 슬쩍 드러나요.",
-    attach:"공포-회피형",attachEng:"Fearful-Avoidant",f4:"Flight",fear:"친밀감, 자율성 상실",
+    attach:"공포-회피형",attachEng:"Fearful-Avoidant",attachQual:"가까워지면 멀어지는",attachBase:"회피형",f4:"Flight",f4Plain:"가까워지면 거리 두기",fear:"친밀감, 자율성 상실",fearHint:"너무 가까워지는 순간",
     attachDesc:"사랑받고 싶은 열망은 있지만 막상 상대가 가까워지면 본능적으로 밀어내요.",
-    attachConnect:"회피처럼 보이지만 사실은 상처받지 않기 위해 먼저 신경을 끄는 거예요. 무감각이 아니라 방어예요.",
+    attachConnect:"회피처럼 보이지만 사실은 상처받지 않기 위해 먼저 신경을 끄는 거예요. 무감각이 아니라 방어예요. 그래서 상대가 진짜 떠나려 하면 오히려 불안해져서 다시 다가가기도 해요 — 밀당처럼 보이지만, 사실은 '가까워지는 것 자체'가 무서운 거예요.",
     f4mine:["Flight"],
     f4desc:"멀어지고 회피하려는 반응이에요. 상처받기 전에 먼저 사라지거나, 관계가 깊어지기 전에 핑계를 찾아 도망쳐요.",
     fearDesc:"가장 두려운 건 누군가에게 진짜로 얽매이는 것이에요.",
-    cycle:"가까워져요 → 불편해져요 → 거리를 둬요 → 상대가 다가와요 → 더 도망가요.",
+    cycle:"가까워져요 → 불편해져요 → 거리를 둬요 → 상대가 진짜 멀어지면 불안해서 다시 다가가요 → 가까워지면 또 불편해져요 (반복)",
     col:"#1D9E75",bg:"#E1F5EE",
-    an:`무관심이 아니에요. 상처받기 전에 먼저 신경을 꺼버리는 거예요. 유리벽 너머에서 상대가 다가오는 걸 보면서도, 문을 여는 순간 잃을 것들이 더 무서운 거죠. 회피는 무감각이 아니라 방어예요.`,
+    an:`무관심이 아니에요. 상처받기 전에 먼저 신경을 꺼버리는 거예요. 다가가고 싶어서 발을 내밀지만, 진짜 닿을 것 같은 순간이 오면 그 자리에서 멈춰버려요. 문을 여는 순간 잃을 것들이 더 무서운 거죠. 회피는 무감각이 아니라 방어예요.`,
     a1:`상대가 가까워지려 할 때 거리를 두지 말고, 그 불편함을 딱 한 번만 더 견뎌봐요. 5분이라도 도망가지 않는 경험이 쌓여야 바뀌어요.`,
     a2:`지금 곁에 있는 사람에게 평소보다 조금 더 솔직한 말을 한 가지 해봐요. 작은 취약함을 보여주는 연습이에요.`,
     a3:`관계가 정의되지 않은 애매한 상태가 편하게 느껴진다면, 그게 진짜 편한 건지 도망칠 구멍을 만들어둔 건지 스스로에게 물어봐요.`,
-    cards:["engulfment","ambiguity"]},
-  K:{name:"천 개의 얼굴을 가진 거울",eng:"The Chameleon Mirror",one:"자기 자신을 지워가며 상대에게 맞추는 유형이에요.",
+    cards:["engulfment","ambiguity"],
+    reframeTitle:"그건 무관심이 아니라, 방어였어요",
+    reframe:"가까워질수록 오히려 멀어지고 싶었던 그 마음 — 사랑이 부족해서가 아니었어요. 다가오는 애정을 감당할 준비가 아직 안 됐던 거예요. 상처받기 전에 먼저 신경을 꺼버리는 건, 사랑을 안 해서가 아니라 사랑을 두려워해서예요. 당신이 차가운 사람이라서가 아니라, 그만큼 조심스러워질 이유가 있었던 거예요."},
+  K:{name:"천 개의 얼굴",eng:"The Chameleon Mirror",one:"자기 자신을 지워가며 상대에게 맞추는 유형이에요.",
     hint:"거절당하지 않으려고 내 모습을 숨기고 상대에게 맞추고 싶은 마음이 슬쩍 드러나요.",
-    attach:"공포-회피형",attachEng:"Fearful-Avoidant",f4:"Fawn (극단형)",fear:"진짜 자신으로 거절당함",
+    attach:"공포-회피형",attachEng:"Fearful-Avoidant",attachQual:"나를 지우고 맞추는",attachBase:"회피형",f4:"Fawn (극단형)",f4Plain:"나를 완전히 지우고 맞춰주기",fear:"진짜 자신으로 거절당함",fearHint:"가면이 벗겨지는 순간",
     attachDesc:"진짜 내 모습을 보여줬다가 거절당할 것에 대한 공포가 너무 커요.",
     attachConnect:"Fawn의 극단적인 형태예요. 취향과 성격과 외모까지 통째로 개조해요.",
     f4mine:["Fawn"],
@@ -555,10 +565,12 @@ const TYPES={
     a1:`오늘 하루, 상대가 무언가를 제안할 때 바로 동조하기 전에 한 박자 멈추고 스스로에게 물어봐요. 나는 이게 진짜 하고 싶은가.`,
     a2:`내 취향이나 의견을 하나 솔직하게 말해봐요. 거절당해도 관계가 무너지지 않는다는 걸 경험해야 해요.`,
     a3:`관계가 애매하게 남아있는 게 불안할 때, 억지로 라벨을 붙이거나 결론을 만들지 말고 그 비어있음을 그대로 둬봐요.`,
-    cards:["ambiguity"]},
+    cards:["ambiguity"],
+    reframeTitle:"그건 다정함이 아니라, 생존 전략이었어요",
+    reframe:"상대에게 맞추느라 지워졌던 '나' — 그건 사랑해서가 아니라 거절당하지 않으려는 반응이었어요. 진짜 내 모습을 보여준 적 없는 관계였다면, 거기서 느낀 공허함은 당연한 거예요. 상대가 사랑한 게 어쩌면 진짜 당신이 아니라, 당신이 애써 만든 가면이었을 수도 있어요. 그러니 그 관계가 끝났다고 해서 '나'라는 사람이 거절당한 건 아니에요."},
   S:{name:"뿌리 깊은 나무",eng:"The Rooted One",one:"흔들리면서도 중심을 잃지 않는 유형이에요.",
     hint:"감정을 솔직하게 말하고, 흔들려도 다시 중심을 잡으려는 모습이 슬쩍 드러나요.",
-    attach:"안정형",attachEng:"Secure Attachment",f4:"통합 — 자기인식",fear:"없음 (강점: 경계 인식)",
+    attach:"안정형",attachEng:"Secure Attachment",attachQual:"",attachBase:"안정형",f4:"통합 — 자기인식",f4Plain:"상황 보고 대응하기",fear:"없음 (강점: 경계 인식)",fearHint:"특별히 두려운 순간은 없어요",
     attachDesc:"자신의 감정과 경계를 꽤 잘 알고 있어요. 상대의 반응에 과하게 흔들리지 않고, 솔직하게 소통하는 편이에요.",
     attachConnect:"완벽하게 안정적인 사람은 없어요. 흔들리는 순간에도 그게 흔들림인 걸 아는 것, 그게 이미 강점이에요.",
     f4mine:[],
@@ -569,16 +581,18 @@ const TYPES={
     an:`자신의 감정과 경계를 꽤 잘 알고 있어요. 상대의 반응에 과하게 흔들리지 않고, 솔직하게 소통하는 편이에요. 완벽하게 안정적인 사람은 없어요. 흔들리는 순간에도 그게 흔들림인 걸 아는 것, 그게 이미 강점이에요.`,
     a1:`지금의 건강한 패턴이 어떤 노력에서 왔는지 한 번 돌아봐요. 당연한 게 아니에요.`,
     a2:`주변에 불안형이나 회피형 패턴으로 힘들어하는 사람이 있다면, 지금 아는 것들을 나눠줄 수 있어요.`,
-    a3:null,cards:[]},
+    a3:null,cards:[],
+    reframeTitle:"지금 느끼는 감정, 대체로 믿어도 돼요",
+    reframe:"흔들릴 때도 있지만, 그 흔들림 자체를 알아차리고 다시 중심을 잡는 힘이 있어요. 불안하지 않다고 해서 사랑이 아닌 게 아니에요. 오히려 편안하고 잔잔한 관계일수록 진짜 사랑에 가까울 확률이 높아요. 그 평온함을 의심하지 않아도 돼요."},
 };
 
-const BNAMES={T:"트로피 수집가",A:"불안의 파수꾼",D:"유리벽 뒤의 관찰자",K:"천 개의 얼굴",S:"뿌리 깊은 나무"};
+const BNAMES={T:"트로피 수집가",A:"잠들지 못하는 밤",D:"닿기 전에 멈춘 발끝",K:"천 개의 얼굴",S:"뿌리 깊은 나무"};
 const BCOLS={T:"#C4571A",A:"#1E5FA0",D:"#1D9E75",K:"#A84878",S:"#4A7C20"};
 const F4_ALL=[
-  {key:"Fight",desc:"통제하고 주도권을 쥐려는 반응. 상대를 조종하거나 관계의 우위를 점하려 해요."},
-  {key:"Flight",desc:"멀어지고 회피하려는 반응. 상처받기 전에 먼저 사라져요."},
-  {key:"Freeze",desc:"아무것도 못 하고 얼어붙는 반응. 압도되어 행동 자체가 멈춰요."},
-  {key:"Fawn",desc:"상대에게 맞춰 위협을 없애려는 반응. 거절당하지 않으려 자신을 지워요."},
+  {key:"Fight",plain:"맞서기",desc:"통제하고 주도권을 쥐려는 반응. 상대를 조종하거나 관계의 우위를 점하려 해요."},
+  {key:"Flight",plain:"도망가기",desc:"멀어지고 회피하려는 반응. 상처받기 전에 먼저 사라져요."},
+  {key:"Freeze",plain:"얼어붙기",desc:"아무것도 못 하고 얼어붙는 반응. 압도되어 행동 자체가 멈춰요."},
+  {key:"Fawn",plain:"맞춰주기",desc:"상대에게 맞춰 위협을 없애려는 반응. 거절당하지 않으려 자신을 지워요."},
 ];
 
 const CONTENT_CARDS={
@@ -780,6 +794,11 @@ function nextQ(){
   } else buildResult();
 }
 
+function attachLabelHtml(t){
+  if(!t.attachQual)return t.attachBase;
+  return `<span style="color:${t.col};font-weight:600">${t.attachQual}</span> ${t.attachBase}`;
+}
+
 function buildResult(){
   show('s-load');
   setTimeout(()=>{
@@ -842,7 +861,7 @@ function buildResult(){
       sigHtml+=`<div class="sig-item"><div class="sig-top"><span class="sig-badge back">Q${b.from} — 이전으로 돌아감</span></div><div class="sig-q">${Qs[qIdx].t}</div><div class="sig-m back">다시 생각하고 싶었던 지점이에요.</div></div>`;
     });
 
-    const f4Html=F4_ALL.map(f=>{const m=t.f4mine&&t.f4mine.includes(f.key);return`<div class="f4-item${m?' mine':''}"><div class="f4-badge">${m?'내 유형':'참고'}</div><div class="f4-name">${f.key}</div><div class="f4-desc">${f.desc}</div></div>`;}).join('');
+    const f4Html=F4_ALL.map(f=>{const m=t.f4mine&&t.f4mine.includes(f.key);return`<div class="f4-item${m?' mine':''}"><div class="f4-badge">${m?'내 유형':'참고'}</div><div class="f4-name">${f.plain} <span style="opacity:.6;font-weight:400">(${f.key})</span></div><div class="f4-desc">${f.desc}</div></div>`;}).join('');
 
     let comboHtml='';
     if(isNear)comboHtml=`<div class="combo-near">${t.name}과 ${TYPES[second].name}이 거의 동등하게 작동하고 있어요 (${topPct}% vs ${secPct}%). 상황에 따라 두 패턴이 번갈아 나타나요.</div>`;
@@ -878,30 +897,35 @@ function buildResult(){
       </div>`;
     });
 
-    document.getElementById('res-header').innerHTML=`<div class="re">${t.attach} / ${t.f4}</div><div class="rn" style="color:${t.col}">${t.name}</div><div class="ro">${t.one}</div>${comboHtml}`;
+    document.getElementById('res-header').innerHTML=`<div class="re">${attachLabelHtml(t)} · ${t.f4Plain}</div><div class="rn" style="color:${t.col}">${t.name}</div><div class="ro">${t.one}</div>${comboHtml}`;
 
     document.getElementById('tb-result').innerHTML=`
-      <div class="sec-lbl">당신의 유형</div>
-      <div class="exp-card">
-        <div class="exp-hd"><div class="exp-hd-left"><div class="exp-eye">애착 이론</div><div class="exp-title">${t.attach}</div><div class="exp-hint">${t.attachEng}</div></div></div>
-        <div class="exp-body-open">
+      <div class="reframe-box" style="background:${t.bg};color:${t.col}">
+        <div class="reframe-eye">가장 먼저 알아야 할 것</div>
+        <div class="reframe-title">${t.reframeTitle}</div>
+        <div class="reframe-body" style="color:var(--text)">${t.reframe}</div>
+      </div>
+      <div class="sec-lbl">근거 — 왜 이렇게 해석했는지</div>
+      <div class="exp-card" id="th0">
+        <div class="exp-hd" onclick="toggleExp('th0')"><div class="exp-hd-left"><div class="exp-eye">애착 이론</div><div class="exp-title">${attachLabelHtml(t)}</div><div class="exp-hint">${t.attach} · ${t.attachEng}</div></div><div class="exp-arrow">∨</div></div>
+        <div class="exp-body" id="eb-th0">
           <div class="def-block muted"><div class="def-lbl">애착 이론이란?</div><div class="def-body">어린 시절 가까운 사람과의 관계 경험이 성인이 된 후의 관계 패턴에 깊이 영향을 준다고 보는 이론이에요. 사람은 크게 안정형, 불안-몰두형, 회피-무시형, 공포-회피형 네 가지 패턴 중 하나에 가깝게 관계를 맺어요. 이건 타고난 성격이 아니라, 반복된 경험이 만든 반응 습관에 가까워요.</div></div>
           <div class="def-block"><div class="def-lbl">${t.attach}이란?</div><div class="def-title">${t.attachEng}</div><div class="def-body">${t.attachDesc}</div></div>
           <div class="def-block key"><div class="def-lbl">${t.name}과의 연결</div><div class="def-body">${t.attachConnect}</div></div>
         </div>
       </div>
-      <div class="exp-card">
-        <div class="exp-hd"><div class="exp-hd-left"><div class="exp-eye">4F 방어기제</div><div class="exp-title">${t.f4}</div><div class="exp-hint">트라우마 반응 이론</div></div></div>
-        <div class="exp-body-open">
+      <div class="exp-card" id="th1">
+        <div class="exp-hd" onclick="toggleExp('th1')"><div class="exp-hd-left"><div class="exp-eye">4F 방어기제</div><div class="exp-title">${t.f4Plain}</div><div class="exp-hint">${t.f4} · 트라우마 반응 이론</div></div><div class="exp-arrow">∨</div></div>
+        <div class="exp-body" id="eb-th1">
           <div class="def-block"><div class="def-lbl">4F 방어기제란?</div><div class="def-body">위협을 느낀 신경계가 자동으로 선택하는 네 가지 생존 반응이에요. 맞서 싸우거나(Fight), 도망치거나(Flight), 얼어붙거나(Freeze), 순응하는(Fawn) 방식으로 나타나요. 원래는 신체적 위험 앞에서 작동하도록 설계된 회로인데, 관계에서 거절이나 갈등을 마주할 때도 똑같이 켜져요. 의식적으로 선택하는 게 아니라 몸이 먼저 반응하는 거라, 알아차리기 전까지는 매번 같은 패턴이 반복돼요.</div></div>
           <div class="f4-grid">${f4Html}</div>
           <div class="def-block key"><div class="def-lbl">${t.name}의 작동 방식</div><div class="def-body">${t.f4desc}</div></div>
         </div>
       </div>
-      <div class="exp-card">
-        <div class="exp-hd"><div class="exp-hd-left"><div class="exp-eye">심리 기저</div><div class="exp-title">핵심 공포와 작동 방식</div><div class="exp-hint">이 패턴이 왜 생기는지</div></div></div>
-        <div class="exp-body-open">
-          <div class="def-block key"><div class="def-lbl">핵심 공포</div><div class="def-title">${t.fear}</div><div class="def-body">${t.fearDesc}</div></div>
+      <div class="exp-card" id="th2">
+        <div class="exp-hd" onclick="toggleExp('th2')"><div class="exp-hd-left"><div class="exp-eye">핵심 공포와 행동 구조</div><div class="exp-title">${t.fear}</div><div class="exp-hint">${t.fearHint}</div></div><div class="exp-arrow">∨</div></div>
+        <div class="exp-body" id="eb-th2">
+          <div class="def-block key"><div class="def-lbl">이 공포가 의미하는 것</div><div class="def-body">${t.fearDesc}</div></div>
           <div class="def-block"><div class="def-lbl">악순환 구조</div><div class="def-body">${t.cycle}</div><div class="def-quote">인정받는 순간은 있지만, 그게 오래 가지 않는다는 걸 이미 경험으로 알고 있을 거예요.</div></div>
         </div>
       </div>
@@ -949,13 +973,13 @@ function showSubType(key){
     return;
   }
   const t=TYPES[key];
-  const f4Html=F4_ALL.map(f=>{const m=t.f4mine&&t.f4mine.includes(f.key);return`<div class="f4-item${m?' mine':''}"><div class="f4-badge">${m?'해당':'참고'}</div><div class="f4-name">${f.key}</div><div class="f4-desc">${f.desc}</div></div>`;}).join('');
+  const f4Html=F4_ALL.map(f=>{const m=t.f4mine&&t.f4mine.includes(f.key);return`<div class="f4-item${m?' mine':''}"><div class="f4-badge">${m?'해당':'참고'}</div><div class="f4-name">${f.plain} <span style="opacity:.6;font-weight:400">(${f.key})</span></div><div class="f4-desc">${f.desc}</div></div>`;}).join('');
   panel.innerHTML=`
     <span class="subtype-close" onclick="document.getElementById('subtype-panel').classList.remove('on')">닫기 ×</span>
     <div style="font-size:11px;color:var(--text-muted);margin-bottom:4px">참고 유형 — 주 유형은 아니지만 반응에서 일부 나타났어요</div>
     <div style="font-size:20px;font-weight:600;color:${t.col};margin-bottom:4px">${t.name}</div>
     <div style="font-size:13px;color:var(--text-sec);line-height:1.65;margin-bottom:12px">${t.one}</div>
-    <div class="def-block"><div class="def-lbl">${t.attach}</div><div class="def-body">${t.attachDesc}</div></div>
+    <div class="def-block"><div class="def-lbl">${attachLabelHtml(t)} <span style="opacity:.6">(${t.attach})</span></div><div class="def-body">${t.attachDesc}</div></div>
     <div class="f4-grid" style="margin-top:8px">${f4Html}</div>
     <div class="def-block" style="margin-top:8px"><div class="def-lbl">핵심 공포</div><div class="def-title">${t.fear}</div><div class="def-body">${t.fearDesc}</div></div>
   `;
